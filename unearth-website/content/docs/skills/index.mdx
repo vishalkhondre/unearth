@@ -1,0 +1,40 @@
+---
+title: Skills Reference
+description: Complete reference for all 15 Unearth discovery skills.
+---
+
+Each skill is a markdown file (`SKILL.md`) that instructs an AI agent to perform a specific discovery activity. Skills have defined inputs, outputs, process steps, verification gates, and anti-shortcut thinking.
+
+## Pipeline Overview
+
+| # | Skill | Stage | Key Output |
+|---|-------|-------|-----------|
+| 00 | [Recon](/docs/skills/reconnaissance/00-recon) | Reconnaissance | Tech stack, project structure |
+| 01 | [Entry Points](/docs/skills/reconnaissance/01-entry-points) | Reconnaissance | HTTP endpoints, event handlers, jobs |
+| 02 | [Actors & Boundaries](/docs/skills/reconnaissance/02-actors-and-boundaries) | Reconnaissance | C4 Context diagram |
+| 03 | [External Systems](/docs/skills/structure/03-external-systems) | Structure | External system inventory |
+| 04 | [Containers](/docs/skills/structure/04-containers) | Structure | C4 Container diagram |
+| 05 | [Components](/docs/skills/structure/05-components) | Structure | C4 Component diagram (per container) |
+| 06 | [Capabilities](/docs/skills/knowledge/06-capabilities) | Knowledge | L1/L2 capability map |
+| 07 | [Data Model](/docs/skills/knowledge/07-data-model) | Knowledge | Entity inventory and relationships |
+| 08 | [Patterns](/docs/skills/knowledge/08-patterns) | Knowledge | Pattern catalog |
+| 09 | [Dependencies](/docs/skills/knowledge/09-dependencies) | Knowledge | Dependency map and risk assessment |
+| 10 | [Blueprint](/docs/skills/assessment/10-blueprint) | Assessment | Industry comparison scorecard |
+| 11 | [Tech Debt](/docs/skills/assessment/11-tech-debt) | Assessment | Categorized debt register |
+| 12 | [Traceability](/docs/skills/assessment/12-traceability) | Assessment | File-to-capability mapping |
+| 13 | [Documentation](/docs/skills/assessment/13-documentation) | Assessment | Complete architecture document |
+
+## Skill Anatomy
+
+Every skill follows the same structure:
+
+1. **YAML Frontmatter** — name and description for tool integration
+2. **Pipeline Position** — stage, order, upstream/downstream dependencies
+3. **Inputs** — required and optional data from previous skills
+4. **Process Steps** — numbered steps the agent follows
+5. **Checkpoints** — intermediate verification pauses
+6. **Rationalizations to Resist** — common shortcuts the agent should avoid
+7. **Red Flags** — failure modes to watch for
+8. **Output Specification** — exact format and sections of the output file
+9. **Verification Gate** — checklist the output must pass
+10. **Stack Adapter Hooks** — where framework-specific hints plug in

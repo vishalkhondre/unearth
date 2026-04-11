@@ -1,0 +1,44 @@
+---
+title: Welcome to Unearth
+description: AI agent skills for architecture and capability discovery. Turn legacy code into living knowledge.
+---
+
+Unearth is an open-source collection of AI agent skills that guide systematic codebase discovery. Point your AI coding tool at any codebase and extract architecture, capabilities, data models, and domain knowledge — with every claim backed by evidence from the code itself.
+
+## What You Get
+
+After running Unearth against a codebase, you get a complete **architecture knowledge base** containing:
+
+- **C4 diagrams** — Context, Container, and Component views of the system
+- **Capability map** — What the system does, organized as L1/L2 business capabilities
+- **Data model** — Entities, relationships, and storage patterns
+- **Pattern catalog** — Architectural patterns in use (and absent)
+- **Dependency map** — Internal coupling and external package risks
+- **Blueprint comparison** — Gaps against an industry reference architecture
+- **Tech debt register** — Categorized, prioritized, with a remediation roadmap
+- **Traceability matrix** — Every file mapped to a capability
+
+## How It Works
+
+Unearth organizes discovery into a **4-stage pipeline** of 14 skills:
+
+| Stage | Name | Skills | What It Produces |
+|-------|------|--------|------------------|
+| 1 | **Reconnaissance** | 00–02 | Tech stack, entry points, actors, system boundary |
+| 2 | **Structure** | 03–05 | External systems, containers, components |
+| 3 | **Knowledge** | 06–09 | Capabilities, data model, patterns, dependencies |
+| 4 | **Assessment** | 10–13 | Blueprint comparison, tech debt, traceability, final docs |
+
+Each skill has defined **inputs**, **outputs**, **verification gates**, and **anti-shortcut thinking** — so the AI agent produces consistent, evidence-based results.
+
+## Quick Start
+
+```bash
+git clone https://github.com/unearth-dev/unearth.git
+```
+
+Then follow the [Getting Started guide](/docs/getting-started) for your AI coding tool.
+
+## Not a Static Analysis Tool
+
+Unearth is **not** a linter, scanner, or migration tool. It is a set of instructions that help an AI agent understand your codebase the way a senior architect would — by reading code, tracing flows, and building a mental model. The agent does the work; the skills guide how.

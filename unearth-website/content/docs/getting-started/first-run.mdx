@@ -1,0 +1,64 @@
+---
+title: First Run
+description: Run your first 3 skills and see immediate results.
+---
+
+## Before You Start
+
+Make sure you have:
+1. Unearth skills accessible to your AI tool (see [Installation](/docs/getting-started/installation))
+2. A codebase to analyze (your own project, or any open-source repo)
+3. Your AI coding tool open with access to both the skills and the target codebase
+
+## Run Stage 1: Reconnaissance
+
+### Skill 00 — Recon
+
+Prompt your AI agent:
+
+```
+Read skills/00-recon/SKILL.md and execute it against this codebase.
+Save output to outputs/00-recon.md
+```
+
+**What you get:** Language and framework identification, project structure map, build system details, deployment configuration, and CI/CD pipeline overview.
+
+**Time:** 2–5 minutes depending on codebase size.
+
+### Skill 01 — Entry Points
+
+```
+Read skills/01-entry-points/SKILL.md and execute it.
+Use outputs/00-recon.md as input.
+Save output to outputs/01-entry-points.md
+```
+
+**What you get:** Every HTTP endpoint, event handler, scheduled job, WebSocket endpoint, CLI command, and background worker in the system.
+
+### Skill 02 — Actors and Boundaries
+
+```
+Read skills/02-actors-and-boundaries/SKILL.md and execute it.
+Save output to outputs/02-actors-and-boundaries.md
+```
+
+**What you get:** All human and system actors, the system boundary definition, and actor-to-entry-point relationships. This is your **C4 Context diagram**.
+
+## Verify Your Results
+
+After running all three skills, check:
+
+- [ ] Does the recon output match your known tech stack?
+- [ ] Are all major entry points captured? (Check a few you know about)
+- [ ] Does the actor list include all user types you expect?
+- [ ] Is the system boundary drawn in the right place?
+
+If something is missing, the skill output will contain `[NEEDS VERIFICATION]` markers for uncertain claims. Investigate those first.
+
+## What's Next
+
+You've completed **Stage 1: Reconnaissance**. From here:
+
+- **Continue to Stage 2** with skills 03–05 to identify containers and components
+- **Jump to capabilities** with skill 06 if you want business capabilities immediately
+- **Run the full pipeline** end-to-end (14 skills, typically 2–4 hours for a medium codebase)

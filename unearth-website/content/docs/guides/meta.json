@@ -1,0 +1,4 @@
+{
+  "title": "Tool Setup Guides",
+  "pages": ["claude-code-setup", "cursor-setup", "copilot-setup", "windsurf-setup", "gemini-cli-setup", "codex-setup"]
+}

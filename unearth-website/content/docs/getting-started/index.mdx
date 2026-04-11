@@ -1,0 +1,67 @@
+---
+title: Getting Started
+description: Set up Unearth with your AI coding tool in under 5 minutes.
+---
+
+## Prerequisites
+
+- An AI coding tool (Claude Code, Cursor, GitHub Copilot, Windsurf, Gemini CLI, or any agent that reads markdown)
+- Access to a codebase you want to analyze (local clone or remote read access)
+- 10 minutes for your first discovery run
+
+## Installation
+
+Clone the Unearth repository:
+
+```bash
+git clone https://github.com/unearth-dev/unearth.git
+```
+
+Or cherry-pick only what you need:
+
+```bash
+# Just the skills (core value)
+cp -r unearth/skills/ your-project/.unearth/skills/
+
+# Add a stack adapter
+cp -r unearth/stack-adapters/dotnet/ your-project/.unearth/stack-adapters/
+
+# Add a blueprint
+cp unearth/blueprints/iiot-saas.md your-project/.unearth/blueprints/
+```
+
+## Choose Your Tool
+
+Unearth works with any AI coding tool that can read markdown files. Pick yours:
+
+| Tool | Setup Time | Best For |
+|------|-----------|----------|
+| [Claude Code](/docs/guides/claude-code-setup) | 2 min | Full pipeline with slash commands |
+| [Cursor](/docs/guides/cursor-setup) | 3 min | Interactive discovery with @mentions |
+| [GitHub Copilot](/docs/guides/copilot-setup) | 3 min | Agent mode with personas |
+| [Windsurf](/docs/guides/windsurf-setup) | 3 min | Cascade mode exploration |
+| [Gemini CLI](/docs/guides/gemini-cli-setup) | 3 min | Native skill integration |
+| [Codex](/docs/guides/codex-setup) | 3 min | Conversation-based loading |
+
+## Your First Discovery
+
+After setup, run the first 3 skills to get an immediate architecture overview:
+
+```
+Run skill 00-recon against this codebase.
+Then run 01-entry-points.
+Then run 02-actors-and-boundaries.
+```
+
+This completes **Stage 1: Reconnaissance** and gives you:
+- Tech stack identification
+- Every entry point into the system
+- All actors (human and system) and the system boundary
+
+See the [full tutorial](/docs/tutorial/your-first-discovery) for a step-by-step walkthrough.
+
+## What's Next
+
+- **Partial runs** — You don't have to run the full pipeline. See [How It Works](/docs/concepts/how-it-works) for run options.
+- **Stack adapters** — Load framework-specific hints for faster, more accurate results. See [Stack Adapters](/docs/stack-adapters).
+- **Blueprints** — Compare your system against an industry reference architecture. See [Blueprints](/docs/blueprints).

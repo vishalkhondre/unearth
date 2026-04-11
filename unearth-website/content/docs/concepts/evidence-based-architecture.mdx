@@ -1,0 +1,47 @@
+---
+title: Evidence-Based Architecture
+description: "Unearth's core principle: every claim must cite code."
+---
+
+## The Problem
+
+Architecture diagrams lie. They show what someone *thought* the system looked like when they drew the diagram — which may have been months or years ago. The code has moved on; the diagram hasn't.
+
+AI agents can make this worse. Given a README and a directory listing, an AI can generate a plausible-looking architecture diagram in seconds. But "plausible" is not "accurate."
+
+## The Unearth Approach
+
+Every architectural claim in an Unearth output must cite **specific evidence** from the codebase:
+
+| Claim Type | Required Evidence |
+|-----------|------------------|
+| "The system uses PostgreSQL" | Connection string in config, ORM entity definitions, migration files |
+| "Service A calls Service B" | HTTP client configuration, URL reference, API call in code |
+| "This component handles user auth" | Auth middleware, token validation, login endpoints |
+| "The system follows CQRS" | Separate read/write models, command/query handler classes |
+
+## The `[NEEDS VERIFICATION]` Standard
+
+When the agent finds a signal but can't confirm it with strong evidence, it marks the claim:
+
+```
+The system appears to use Redis for caching [NEEDS VERIFICATION — 
+found `redis` in package.json but no usage in application code].
+```
+
+This is a feature, not a failure. It's the agent being honest about uncertainty. A human reviewer can quickly check these markers and confirm or remove the claim.
+
+## Evidence Chain
+
+Unearth builds evidence chains from raw code to architectural claims:
+
+**File** (e.g., `UserController.cs`) → **Component** (User API) → **Container** (Core API Service) → **Capability** (User Management) → **Blueprint comparison** (coverage assessment)
+
+Skill 12 (Traceability) makes this chain explicit by mapping every file to its component and capability.
+
+## Why This Matters
+
+- **Trust.** Stakeholders can verify any claim by checking the cited evidence.
+- **Currency.** Re-running the pipeline against updated code produces updated architecture.
+- **Completeness.** Orphaned files (not mapped to any capability) reveal gaps in understanding.
+- **Migration planning.** Knowing exactly which files belong to which capability tells you what to extract.

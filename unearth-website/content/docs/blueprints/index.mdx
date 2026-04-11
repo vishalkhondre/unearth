@@ -1,0 +1,32 @@
+---
+title: Industry Blueprints
+description: Reference capability models for comparing your system against industry standards.
+---
+
+A **blueprint** is a reference capability model for a specific industry domain. Use it with skill `10-blueprint` to assess how your system compares to industry expectations.
+
+## Available Blueprints
+
+| Blueprint | Capabilities | Domain |
+|-----------|-------------|--------|
+| [IIoT SaaS](/docs/blueprints/iiot-saas) | 33 | Industrial IoT analytics platforms |
+| [E-Commerce](/docs/blueprints/e-commerce) | 25 | Online retail and digital commerce |
+| [Fintech Core Banking](/docs/blueprints/fintech-core-banking) | 20 | Banking, payments, and financial services |
+| [SaaS B2B](/docs/blueprints/saas-b2b) | 18 | Multi-tenant B2B software platforms |
+| [Healthcare EHR](/docs/blueprints/healthcare-ehr) | 20 | Electronic health record systems |
+
+## How Blueprints Work
+
+During skill `10-blueprint`, the agent:
+
+1. Maps each discovered L1 capability to the closest blueprint capability
+2. Rates coverage as **Full**, **Partial**, **Gap**, or **N/A**
+3. Documents what exists versus what is missing for partial matches
+4. Classifies gaps as **Critical** (blocks core operations) or **Moderate** (limits growth)
+5. Produces a prioritized roadmap for closing gaps
+
+## Creating Custom Blueprints
+
+If your domain is not covered, you can create a custom blueprint. See the [Creating Blueprints](/docs/advanced/creating-blueprints) guide.
+
+A good blueprint has 15--35 capabilities, is grounded in real industry frameworks (not invented), and includes evidence signals that help the agent match capabilities to code patterns.

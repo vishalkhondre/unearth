@@ -1,0 +1,52 @@
+---
+title: The C4 Model
+description: How Unearth uses the C4 model to structure architecture views.
+---
+
+The [C4 model](https://c4model.com/) is a set of 4 hierarchical diagrams for describing software architecture. Unearth uses C4 as the backbone for its structural output.
+
+## Four Levels
+
+### Level 1 — Context
+
+**What:** The system as a black box, surrounded by its actors and external systems.
+
+**Produced by:** Skill 02 (Actors and Boundaries)
+
+**Key question:** Who uses this system, and what does it talk to?
+
+### Level 2 — Container
+
+**What:** The system boundary opened up to reveal its deployable units — web apps, APIs, databases, message brokers, workers.
+
+**Produced by:** Skill 04 (Containers)
+
+**Key question:** What are the running processes and data stores?
+
+### Level 3 — Component
+
+**What:** A single container opened up to reveal its internal components — services, controllers, repositories, domain modules.
+
+**Produced by:** Skill 05 (Components)
+
+**Key question:** What are the major building blocks inside this container?
+
+### Level 4 — Code
+
+Unearth does not produce Level 4 (Code) diagrams. At this level, the code itself is the diagram. However, the traceability matrix (Skill 12) maps every file to a component and capability.
+
+## How Unearth Builds C4 Views
+
+Each C4 level is built from evidence gathered by specific skills:
+
+| C4 Level | Skills Used | Evidence Sources |
+|----------|------------|-----------------|
+| Context | 00, 01, 02 | Auth patterns, entry points, external calls |
+| Container | 00, 03, 04 | Build outputs, deployment configs, inter-service communication |
+| Component | 04, 05 | Package structure, class roles, dependency injection |
+
+## Key Rules
+
+- **Every element must have evidence.** No boxes on the diagram without a cited file or configuration entry.
+- **Boundaries matter.** The system boundary (Level 1) and container boundaries (Level 2) must be explicitly justified.
+- **Relationships have protocols.** Arrows between elements specify the communication protocol (HTTP, gRPC, AMQP, shared database, etc.).

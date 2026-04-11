@@ -1,0 +1,44 @@
+---
+title: "Traceability"
+description: "Builds file-to-component-to-capability traceability chain. Assesses migration readiness per component."
+---
+
+**Skill:** `12-traceability` | **Lines:** 311 | **Next:** `13-documentation`
+
+## What This Skill Does
+
+Builds file-to-component-to-capability traceability chain. Assesses migration readiness per component.
+
+## Pipeline Position
+
+| Attribute | Value |
+|-----------|-------|
+| **Skill** | `12-traceability` |
+| **Stage** | Assessment |
+| **Runs after** | Previous skill output |
+| **Runs before** | `13-documentation` |
+
+## Key Outputs
+
+The output file (`outputs/12-traceability.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+
+## How to Run
+
+```
+Read skills/12-traceability/SKILL.md and execute it against this codebase.
+Save output to outputs/12-traceability.md
+```
+
+## Verification Gate
+
+The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+
+- All sections present and populated
+- Every claim has cited evidence
+- No circular reasoning
+- `[NEEDS VERIFICATION]` markers for uncertain claims
+- Output consistent with upstream skill outputs
+
+## Full Skill File
+
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/12-traceability/SKILL.md` in the repository.

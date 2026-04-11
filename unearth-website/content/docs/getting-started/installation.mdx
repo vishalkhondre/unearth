@@ -1,0 +1,55 @@
+---
+title: Installation
+description: Clone the repo or cherry-pick individual skills into your project.
+---
+
+## Full Clone
+
+The simplest approach — clone everything and point your AI tool at the skills directory:
+
+```bash
+git clone https://github.com/unearth-dev/unearth.git
+cd unearth
+```
+
+The repository structure:
+
+```
+unearth/
+  skills/           # 15 discovery skills (the core)
+  stack-adapters/   # Framework-specific hints
+  blueprints/       # Industry reference architectures
+  agents/           # Pre-configured agent personas
+  templates/        # Output document templates
+  references/       # Supporting reference material
+  hooks/            # Session lifecycle automation
+  docs/             # This documentation
+```
+
+## Cherry-Pick Installation
+
+If you only want specific pieces, copy them into your project:
+
+```bash
+# Core skills only (required)
+cp -r unearth/skills/ .unearth/skills/
+
+# Optional: stack adapter for your framework
+cp -r unearth/stack-adapters/java-spring/ .unearth/stack-adapters/
+
+# Optional: industry blueprint for comparison
+cp unearth/blueprints/e-commerce.md .unearth/blueprints/
+
+# Optional: agent persona
+cp unearth/agents/architecture-archaeologist.md .unearth/agents/
+```
+
+## Verify Installation
+
+Ask your AI agent:
+
+```
+Read the file at skills/00-recon/SKILL.md and summarize what it does.
+```
+
+If the agent can read and summarize the skill, you're ready to go.

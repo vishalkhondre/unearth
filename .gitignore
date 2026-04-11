@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (for website)
+node_modules/
+.next/
+out/
+dist/
+
+# Python (if any tooling)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Discovery outputs (generated, not committed)
+outputs/
+
+# Environment
+.env
+.env.local
+.env.*.local

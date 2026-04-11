@@ -1,0 +1,44 @@
+---
+title: "Tech Debt"
+description: "Harvests findings from all upstream skills. Categorizes debt across 8 types and 4 severity levels. Produces a remediation roadmap."
+---
+
+**Skill:** `11-tech-debt` | **Lines:** 367 | **Next:** `12-traceability`
+
+## What This Skill Does
+
+Harvests findings from all upstream skills. Categorizes debt across 8 types and 4 severity levels. Produces a remediation roadmap.
+
+## Pipeline Position
+
+| Attribute | Value |
+|-----------|-------|
+| **Skill** | `11-tech-debt` |
+| **Stage** | Assessment |
+| **Runs after** | Previous skill output |
+| **Runs before** | `12-traceability` |
+
+## Key Outputs
+
+The output file (`outputs/11-tech-debt.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+
+## How to Run
+
+```
+Read skills/11-tech-debt/SKILL.md and execute it against this codebase.
+Save output to outputs/11-tech-debt.md
+```
+
+## Verification Gate
+
+The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+
+- All sections present and populated
+- Every claim has cited evidence
+- No circular reasoning
+- `[NEEDS VERIFICATION]` markers for uncertain claims
+- Output consistent with upstream skill outputs
+
+## Full Skill File
+
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/11-tech-debt/SKILL.md` in the repository.

@@ -1,0 +1,69 @@
+---
+title: How Unearth Works
+description: The discovery pipeline, execution model, and what makes Unearth different.
+---
+
+## The Core Idea
+
+Unearth is a set of **instructions for AI agents** — not a tool that runs against your code. You give your AI coding tool (Claude Code, Cursor, Copilot, etc.) access to Unearth's skill files, and the agent follows them step by step to analyze your codebase.
+
+Think of it like a senior architect's playbook. The playbook doesn't do the analysis — the architect does. Unearth is the playbook; your AI agent is the architect.
+
+## The Discovery Pipeline
+
+Discovery is organized into **4 stages** with **14 skills**:
+
+### Stage 1 — Reconnaissance (Skills 00–02)
+
+**Goal:** Understand what the codebase is and how it's structured.
+
+The agent scans the repository, identifies the tech stack, maps every entry point into the system, and identifies all actors (human users and external systems). The output is a **C4 Context diagram**.
+
+### Stage 2 — Structure (Skills 03–05)
+
+**Goal:** Map the system's internal architecture.
+
+The agent identifies external systems, deployable containers (services, apps, workers), and the internal components within each container. The output is **C4 Container and Component diagrams**.
+
+### Stage 3 — Knowledge (Skills 06–09)
+
+**Goal:** Extract domain knowledge from the structure.
+
+The agent identifies business capabilities (what the system *does*), the data model, architectural patterns, and dependency relationships. This is where code structure becomes **business understanding**.
+
+### Stage 4 — Assessment (Skills 10–13)
+
+**Goal:** Evaluate and document.
+
+The agent compares the system against an industry blueprint, catalogs tech debt, builds a traceability matrix, and synthesizes everything into a comprehensive architecture document.
+
+## Execution Model
+
+Each skill follows the same structure:
+
+1. **Read inputs** — consume outputs from upstream skills
+2. **Execute process steps** — follow the skill's step-by-step instructions
+3. **Hit checkpoints** — pause to verify intermediate results
+4. **Resist rationalizations** — the skill lists common shortcuts and why to avoid them
+5. **Watch for red flags** — known failure modes to catch early
+6. **Verify output** — check the final output against the skill's verification gate
+7. **Save output** — write to the `outputs/` directory for downstream skills
+
+## Run Options
+
+You don't have to run all 14 skills. Common partial runs:
+
+| Run | Skills | Time | What You Get |
+|-----|--------|------|-------------|
+| Quick Recon | 00–02 | 30 min | Tech stack + actors + boundary |
+| Architecture Snapshot | 00–05 | 1–2 hr | Full C4 views (Context + Container + Component) |
+| Capability Discovery | 00–06 | 2–3 hr | Business capability map with L1/L2 hierarchy |
+| Full Assessment | 00–13 | 3–5 hr | Complete architecture knowledge base |
+
+## What Makes Unearth Different
+
+**Evidence-based.** Every architectural claim must cite a specific file, class, configuration entry, or code pattern. If the agent can't cite evidence, the claim is marked `[NEEDS VERIFICATION]`.
+
+**Anti-shortcut thinking.** Each skill includes a "Rationalizations to Resist" section listing common ways agents take shortcuts ("the codebase is too large to scan fully" or "I can infer the architecture from the README"). The agent is trained to resist these and do the actual work.
+
+**Verification gates.** Each skill has a verification checklist that must pass before the output is considered complete. This catches missing data, circular reasoning, and unsupported claims.

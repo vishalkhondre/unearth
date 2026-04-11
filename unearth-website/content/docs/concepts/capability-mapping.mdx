@@ -1,0 +1,43 @@
+---
+title: Capability Mapping
+description: How Unearth extracts business capabilities from code structure.
+---
+
+A **capability** is something the system *does* from a business perspective. "Asset Management" is a capability. "GremlinService" is not — that's an implementation detail.
+
+## Why Capabilities Matter
+
+Capabilities bridge the gap between code and business:
+
+- **Architects** use them to plan migrations and evaluate coverage
+- **Product teams** use them to understand what the system offers
+- **New engineers** use them to navigate a large codebase by domain
+
+## The L1/L2 Hierarchy
+
+Unearth organizes capabilities into two levels:
+
+**L1 (Level 1):** Major business domains. A typical system has 8–20 L1 capabilities. Examples: *User Management*, *Order Processing*, *Notification and Alerting*.
+
+**L2 (Level 2):** Sub-capabilities within each L1. Each L1 typically has 2–6 L2s. Examples: Under *User Management*: *Registration*, *Profile Management*, *Role Assignment*, *EULA Compliance*.
+
+## How Unearth Extracts Capabilities
+
+Skill 06 (Capabilities) uses a **multi-source seeding** approach:
+
+1. **Backend signals** — Package/namespace groupings, service class names, domain entities
+2. **API signals** — Route groupings, controller organizations, API tag descriptions
+3. **UI signals** — Navigation structure, feature modules, page groupings
+
+Each candidate is then analyzed through four possible actions:
+
+| Action | When |
+|--------|------|
+| **CONFIRM** | Single cohesive domain, clear boundaries, dedicated code |
+| **MERGE** | Two candidates are actually the same capability split across projects |
+| **SPLIT** | One candidate contains two distinct business domains |
+| **DE-SCOPE** | Cross-cutting infrastructure, not a business capability |
+
+## Coverage Verification
+
+After confirming all capabilities, Unearth checks that **more than 90% of codebase files** are assigned to at least one capability. Orphaned files often reveal missed capabilities or undocumented features.

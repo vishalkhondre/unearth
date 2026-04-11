@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* Custom Unearth brand tokens */
+:root {
+  --color-unearth-primary: #2563eb;
+  --color-unearth-accent: #f59e0b;
+  --color-unearth-surface: #f8fafc;
+  --font-display: "Instrument Sans", system-ui, sans-serif;
+}
+
+.dark {
+  --color-unearth-surface: #0f172a;
+}
+
+/* Pipeline stage colors */
+.stage-recon { --stage-color: #6366f1; }
+.stage-structure { --stage-color: #2563eb; }
+.stage-knowledge { --stage-color: #059669; }
+.stage-assessment { --stage-color: #d97706; }

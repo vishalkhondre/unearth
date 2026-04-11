@@ -1,0 +1,36 @@
+---
+title: Stack Adapters
+description: Framework-specific pattern detection hints for faster, more accurate discovery.
+---
+
+A **stack adapter** provides framework-specific hints that help Unearth skills find things faster. Instead of generic pattern matching, the agent knows exactly where to look for routes, entities, auth patterns, and dependencies in your specific framework.
+
+## Available Adapters
+
+| Adapter | Framework | Skill Hooks |
+|---------|-----------|------------|
+| [.NET](/docs/stack-adapters/dotnet) | ASP.NET Core, Azure Functions | 9 |
+| [Java/Spring](/docs/stack-adapters/java-spring) | Spring Boot, Spring MVC, Spring Cloud | 9 |
+| [Python/Django](/docs/stack-adapters/python-django) | Django, Django REST Framework, Celery | 9 |
+| [Node/Express](/docs/stack-adapters/node-express) | Express, NestJS, Fastify | 9 |
+| [Ruby/Rails](/docs/stack-adapters/ruby-rails) | Ruby on Rails, Sidekiq | 9 |
+| [Generic](/docs/stack-adapters/generic) | Any language or framework | 9 |
+
+## How Adapters Work
+
+Each adapter provides **skill hooks** — framework-specific hints for skills 00 through 09. For example, the Java/Spring adapter tells skill 01 to look for `@RestController` and `@GetMapping` annotations to find HTTP endpoints, while the Ruby/Rails adapter tells it to parse `config/routes.rb`.
+
+## Loading an Adapter
+
+At the start of a discovery session:
+
+```
+Read stack-adapters/java-spring/ADAPTER.md and keep it in context
+for this session.
+```
+
+The agent will use the adapter's hints automatically as it executes each skill.
+
+## Creating Custom Adapters
+
+If your framework is not covered, see the [Creating Stack Adapters](/docs/advanced/creating-stack-adapters) guide.

@@ -1,0 +1,44 @@
+---
+title: "Dependencies"
+description: "Maps business-to-business, business-to-technical, and external package dependencies. Flags EOL risks and coupling hotspots."
+---
+
+**Skill:** `09-dependencies` | **Lines:** 352 | **Next:** `10-blueprint`
+
+## What This Skill Does
+
+Maps business-to-business, business-to-technical, and external package dependencies. Flags EOL risks and coupling hotspots.
+
+## Pipeline Position
+
+| Attribute | Value |
+|-----------|-------|
+| **Skill** | `09-dependencies` |
+| **Stage** | Knowledge |
+| **Runs after** | Previous skill output |
+| **Runs before** | `10-blueprint` |
+
+## Key Outputs
+
+The output file (`outputs/09-dependencies.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+
+## How to Run
+
+```
+Read skills/09-dependencies/SKILL.md and execute it against this codebase.
+Save output to outputs/09-dependencies.md
+```
+
+## Verification Gate
+
+The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+
+- All sections present and populated
+- Every claim has cited evidence
+- No circular reasoning
+- `[NEEDS VERIFICATION]` markers for uncertain claims
+- Output consistent with upstream skill outputs
+
+## Full Skill File
+
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/09-dependencies/SKILL.md` in the repository.

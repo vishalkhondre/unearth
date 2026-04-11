@@ -1,0 +1,44 @@
+---
+title: "Blueprint Comparison"
+description: "Compares discovered capabilities against an industry blueprint. Rates coverage, identifies overlaps, and produces a prioritized roadmap."
+---
+
+**Skill:** `10-blueprint` | **Lines:** 340 | **Next:** `11-tech-debt`
+
+## What This Skill Does
+
+Compares discovered capabilities against an industry blueprint. Rates coverage, identifies overlaps, and produces a prioritized roadmap.
+
+## Pipeline Position
+
+| Attribute | Value |
+|-----------|-------|
+| **Skill** | `10-blueprint` |
+| **Stage** | Assessment |
+| **Runs after** | Previous skill output |
+| **Runs before** | `11-tech-debt` |
+
+## Key Outputs
+
+The output file (`outputs/10-blueprint.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+
+## How to Run
+
+```
+Read skills/10-blueprint/SKILL.md and execute it against this codebase.
+Save output to outputs/10-blueprint.md
+```
+
+## Verification Gate
+
+The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+
+- All sections present and populated
+- Every claim has cited evidence
+- No circular reasoning
+- `[NEEDS VERIFICATION]` markers for uncertain claims
+- Output consistent with upstream skill outputs
+
+## Full Skill File
+
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/10-blueprint/SKILL.md` in the repository.

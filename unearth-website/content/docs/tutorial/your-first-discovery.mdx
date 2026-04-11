@@ -1,0 +1,69 @@
+---
+title: "Tutorial: Your First Discovery"
+description: A hands-on walkthrough of Stage 1 Reconnaissance against a real codebase.
+---
+
+This tutorial walks you through the first 3 skills of the Unearth pipeline. By the end, you'll have a C4 Context diagram, a complete entry point inventory, and a clear picture of who and what interacts with the system.
+
+## What You'll Build
+
+After completing this tutorial, you'll have three output files:
+
+| Output | Content |
+|--------|---------|
+| `outputs/00-recon.md` | Tech stack, project structure, frameworks, deployment |
+| `outputs/01-entry-points.md` | Every HTTP endpoint, event handler, job, and webhook |
+| `outputs/02-actors-and-boundaries.md` | Actors, system boundary, and the C4 Context view |
+
+## Step 1: Load a Stack Adapter (Optional)
+
+If your codebase matches a known stack, load the adapter first. It gives the agent framework-specific hints:
+
+```
+Read stack-adapters/java-spring/ADAPTER.md and keep it in context
+for the discovery session.
+```
+
+Available adapters: `.NET`, `Java/Spring`, `Python/Django`, `Node/Express`, `Ruby/Rails`, `Generic`.
+
+## Step 2: Run Recon (Skill 00)
+
+```
+Execute skills/00-recon/SKILL.md against this codebase.
+```
+
+The agent will scan the repository structure, identify languages and frameworks, map the project organization, and detect deployment and CI/CD configuration.
+
+**Verify:** Does the output correctly identify your primary language, framework, and number of deployable projects?
+
+## Step 3: Map Entry Points (Skill 01)
+
+```
+Execute skills/01-entry-points/SKILL.md.
+Input: outputs/00-recon.md
+```
+
+The agent will find every way into the system — HTTP routes, message consumers, scheduled jobs, WebSocket endpoints, and CLI commands.
+
+**Verify:** Pick 3 endpoints you know exist. Are they in the output? If not, check whether the agent missed a project or directory.
+
+## Step 4: Identify Actors and Draw the Boundary (Skill 02)
+
+```
+Execute skills/02-actors-and-boundaries/SKILL.md.
+Input: outputs/00-recon.md and outputs/01-entry-points.md
+```
+
+The agent will classify actors from authentication patterns, define the system boundary, and map actor-to-system relationships.
+
+**Verify:** Does the actor list include all user roles? Is the boundary drawn correctly (what's inside vs. outside your system)?
+
+## What You've Achieved
+
+You've completed **Stage 1: Reconnaissance**. Your `outputs/` directory contains the foundation that every subsequent skill builds on.
+
+**Next steps:**
+- Run `/containers` (skills 03–04) to map the container architecture
+- Run `/components` (skill 05) to dive into a specific container
+- Run `/capabilities` (skill 06) to extract business capabilities
+- Or run `/discover` to execute the entire 14-skill pipeline end-to-end

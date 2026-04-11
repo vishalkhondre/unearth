@@ -1,0 +1,44 @@
+---
+title: "Documentation"
+description: "Capstone skill. Synthesizes all upstream outputs into a comprehensive architecture knowledge base document."
+---
+
+**Skill:** `13-documentation` | **Lines:** 371 | **Next:** `end`
+
+## What This Skill Does
+
+Capstone skill. Synthesizes all upstream outputs into a comprehensive architecture knowledge base document.
+
+## Pipeline Position
+
+| Attribute | Value |
+|-----------|-------|
+| **Skill** | `13-documentation` |
+| **Stage** | Assessment |
+| **Runs after** | Previous skill output |
+| **Runs before** | `end` |
+
+## Key Outputs
+
+The output file (`outputs/13-documentation.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+
+## How to Run
+
+```
+Read skills/13-documentation/SKILL.md and execute it against this codebase.
+Save output to outputs/13-documentation.md
+```
+
+## Verification Gate
+
+The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+
+- All sections present and populated
+- Every claim has cited evidence
+- No circular reasoning
+- `[NEEDS VERIFICATION]` markers for uncertain claims
+- Output consistent with upstream skill outputs
+
+## Full Skill File
+
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/13-documentation/SKILL.md` in the repository.
