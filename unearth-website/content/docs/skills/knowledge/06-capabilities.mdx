@@ -1,44 +1,98 @@
 ---
 title: "Capabilities"
-description: "Extracts business capabilities using multi-source seeding. Produces L1/L2 capability hierarchy with actor mapping."
+description: "Extracts business capabilities from component inventories across all analyzed containers, producing a final L1/L2 capability hierarchy with actor mapping and coverage verification."
 ---
-
-**Skill:** `06-capabilities` | **Lines:** 359 | **Next:** `07-data-model`
 
 ## What This Skill Does
 
-Extracts business capabilities using multi-source seeding. Produces L1/L2 capability hierarchy with actor mapping.
+Extracts what the system does for its users as a structured capability map. Seeds candidates from code structure (backend packages, API surface, and UI modules), analyzes each for cohesion and boundaries, merges related candidates, verifies coverage against the codebase, and organizes the result into an L1/L2 hierarchy.
+
+Without this step, the agent can describe the system's structure (containers, components, data stores) but cannot articulate its business purpose -- what value it delivers, to whom, and through which functions. This is the step that bridges architecture to business meaning.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 3 -- Knowledge |
 | **Skill** | `06-capabilities` |
-| **Stage** | Knowledge |
-| **Runs after** | Previous skill output |
+| **Runs after** | `05-components` |
 | **Runs before** | `07-data-model` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "05-components", section: "Business Components"},
+    {skill: "00-recon", section: "Project Organization"},
+    {skill: "01-entry-points", section: "HTTP Endpoints"}
+  ]}
+  outputs={[
+    {file: "outputs/06-capabilities.md", sections: ["Seed Candidates", "Analysis and Action Determination", "Action Summary", "Coverage Verification", "L1 Capability Definitions", "L2 Sub-Capability Inventory", "Capability-to-Actor Matrix", "Key Findings"]}
+  ]}
+  downstream={["07-data-model", "10-blueprint", "12-traceability", "13-documentation"]}
+/>
 
-The output file (`outputs/06-capabilities.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load upstream context** -- Read business component inventories, project lists, and HTTP endpoint groupings from upstream outputs.
+2. **Seed capability candidates** -- Generate an initial candidate list from three independent sources: backend packages/components, API surface/controllers, and UI modules/routes.
+3. **Analyze each candidate** -- Perform a structured assessment of cohesion, coupling, boundary clarity, and size for every candidate.
+4. **Determine action for each candidate** -- Assign CONFIRM, MERGE, SPLIT, or DE-SCOPE to each candidate with a documented rationale.
+5. **Verify coverage** -- Map every functional module across all projects to a confirmed L1 capability and resolve orphans. Target is greater than 90% coverage.
+6. **Define L2 sub-capabilities** -- Break each confirmed L1 into L2 sub-capabilities with names, descriptions, and project scope.
+7. **Map capabilities to actors** -- Cross-reference capabilities with the actor inventory to identify which actors use each capability.
+8. **Compile capabilities output** -- Assemble all findings into the final output file.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Seed Candidates | Initial candidate list with source (backend, API, UI), projects, and key files |
+| Analysis and Action Determination | Per-candidate cohesion, coupling, boundary, and size assessment |
+| Action Summary | Tables of confirmed, merged, and de-scoped candidates with rationale |
+| Coverage Verification | Per-project module coverage percentages and orphan resolution |
+| L1 Capability Definitions | Full definition for each L1 including scope, actors, and L2 breakdown |
+| L2 Sub-Capability Inventory | Complete L2 table with capability IDs, projects, and descriptions |
+| Capability-to-Actor Matrix | Which actors use which capabilities |
+
+<OutputExample filename="outputs/06-capabilities.md">
+
+```markdown
+## 5. L1 Capability Definitions
+
+### L1-1: Order Management
+
+**Projects:** order-api, order-bff, order-ui
+**Scope:** Order creation, lifecycle tracking, fulfillment status, and cancellation
+**Actors:** Customer User, Admin User
+**L2 Sub-Capabilities:**
+- L2-1.1: Order Placement -- Handles cart checkout, payment initiation, and order creation
+- L2-1.2: Order Tracking -- Provides real-time status updates and shipment tracking
+- L2-1.3: Order Cancellation -- Processes cancellation requests and triggers refund workflows
+
+### L1-2: Product Catalog
+
+**Projects:** order-api, order-ui
+**Scope:** Product listing, search, filtering, and detail display
+**Actors:** Customer User, Admin User
+**L2 Sub-Capabilities:**
+- L2-2.1: Product Search -- Full-text search with faceted filtering
+- L2-2.2: Category Management -- Hierarchical category structure and product assignment
+- L2-2.3: Inventory Display -- Real-time stock availability for product pages
 ```
-Read skills/06-capabilities/SKILL.md and execute it against this codebase.
-Save output to outputs/06-capabilities.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Candidates were seeded from at least two sources (backend + API, or backend + UI)
+- Every candidate has a structured analysis (cohesion, coupling, boundaries, size)
+- Every candidate has an action (CONFIRM, MERGE, SPLIT, DE-SCOPE) with rationale
+- Coverage verification achieves greater than 90% with all modules accounted for
+- Each L1 capability has name, projects, scope, actors, and L2 sub-capabilities
+- Capability-to-actor matrix is populated
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/06-capabilities/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/06-capabilities/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/06-capabilities/SKILL.md) in the repository.

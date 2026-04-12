@@ -1,44 +1,83 @@
 ---
 title: "Containers"
-description: "Identifies deployable units, shared libraries, and inter-container communication patterns. Produces the C4 Container diagram."
+description: "Identifies all independently deployable units within the system boundary (C4 containers), maps inter-container communication with protocols and patterns, and detects architecture patterns like BFF, shared database, and event-driven."
 ---
-
-**Skill:** `04-containers` | **Lines:** 354 | **Next:** `05-components`
 
 ## What This Skill Does
 
-Identifies deployable units, shared libraries, and inter-container communication patterns. Produces the C4 Container diagram.
+Identifies every independently deployable runtime unit within the system boundary -- the C4 "container" level. Maps how containers communicate with each other and with external systems. Detects architecture patterns that emerge from the container topology, such as Backend-for-Frontend, shared database, event-driven, and synchronous chain patterns.
+
+Without this step, the agent cannot distinguish deployable units from code modules, will miss inter-service communication patterns, and will lack the structural foundation needed for component-level analysis in `05-components`.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 2 -- Structure |
 | **Skill** | `04-containers` |
-| **Stage** | Structure |
-| **Runs after** | Previous skill output |
+| **Runs after** | `03-external-systems` |
 | **Runs before** | `05-components` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "00-recon", section: "Project Organization"},
+    {skill: "01-entry-points", section: "Summary"},
+    {skill: "02-actors-and-boundaries", section: "System Boundary"},
+    {skill: "03-external-systems", section: "External Systems Inventory"}
+  ]}
+  outputs={[
+    {file: "outputs/04-containers.md", sections: ["Analysis Scope", "Container Inventory", "Non-Container Projects", "Shared Libraries", "Container-to-Container Communication", "Container-to-External-System Communication", "Architecture Patterns", "Key Request Flows", "Communication Topology Diagram", "Key Findings", "Items Flagged [NEEDS VERIFICATION]"]}
+  ]}
+  downstream={["05-components", "06-capabilities", "09-dependencies", "12-traceability", "13-documentation"]}
+/>
 
-The output file (`outputs/04-containers.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load upstream context** -- Read the project list, entry point counts, boundary definition, and external system inventory from all four upstream outputs
+2. **Identify application containers** -- Classify each inside-boundary project as a container (has its own deployment target, entry points, or process startup) or non-container (shared library, test project, build tool)
+3. **Map shared libraries and cross-cutting code** -- Identify code shared across containers with which containers reference it and what it provides
+4. **Map container-to-container communication** -- Find HTTP client configs, message producers/consumers, shared database access, and other inter-container links with protocol and direction
+5. **Map container-to-external-system communication** -- Connect each container to its external systems from `03-external-systems` with protocol, direction, and resilience status
+6. **Detect architecture patterns** -- Identify BFF, API gateway, shared database, event-driven/CQRS, synchronous chain, microservices, monolith, and strangler fig patterns with evidence
+7. **Identify key findings** -- Flag synchronous chains longer than 3 hops, shared databases, missing resilience, single points of failure, and mixed framework versions
+8. **Compile containers output** -- Assemble findings including an ASCII topology diagram and 3-5 key request flows
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Container Inventory | Each container with ID, name, source project, technology, type, entry point count, responsibility, and deploy target |
+| Container-to-Container Communication | Every inter-container link with protocol, direction, and detection method |
+| Architecture Patterns | Detected patterns (BFF, shared DB, event-driven) with participating containers and assessment |
+| Communication Topology Diagram | ASCII diagram showing containers and their connections |
+
+<OutputExample filename="outputs/04-containers.md">
+
+```markdown
+## 2. Container Inventory
+
+| ID | Name | Source Project | Technology | Type | Entry Points | Primary Responsibility | Deploy Target |
+| --- | --- | --- | --- | --- | ---:| --- | --- |
+| CON-001 | Order API | order-api | .NET 8 / ASP.NET Core | API | 26 | Manages orders, customers, and inventory | Azure App Service |
+| CON-002 | Order BFF | order-bff | .NET 8 / ASP.NET Core | API | 19 | Aggregates API calls for the Angular frontend | Azure App Service |
+| CON-003 | Order UI | order-ui | Angular 17 | SPA | 0 | Customer-facing order management interface | Azure Static Web Apps |
 ```
-Read skills/04-containers/SKILL.md and execute it against this codebase.
-Save output to outputs/04-containers.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Every inside-boundary project from `02-actors-and-boundaries` is classified as container or non-container
+- Every container has ID, name, technology, type, entry point count, responsibility, and deploy target
+- Shared libraries are identified with their consumers listed
+- Every container-to-container communication link is mapped with protocol, direction, and evidence
+- Architecture patterns are detected and assessed
+- Key request flows (3-5) are documented end-to-end
+- ASCII topology diagram is included
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/04-containers/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/04-containers/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/04-containers/SKILL.md) in the repository.

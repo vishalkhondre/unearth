@@ -1,4 +1,4 @@
 {
   "title": "Reference",
-  "pages": ["c4-cheat-sheet", "architecture-patterns", "capability-mapping-guide", "tech-debt-classification", "skill-anatomy"]
+  "pages": ["example-outputs", "agent-personas", "c4-cheat-sheet", "architecture-patterns", "capability-mapping-guide", "tech-debt-classification", "skill-anatomy"]
 }

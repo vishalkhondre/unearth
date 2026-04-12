@@ -1,44 +1,80 @@
 ---
 title: "Reconnaissance"
-description: "Scans repository structure to build a codebase mental model. Detects languages, frameworks, build systems, project organization, and deployment configuration."
+description: "Scans repository structure to build an initial codebase mental model. Detects programming languages, frameworks, build systems, project organization, file distribution, deployment configuration, and CI/CD pipelines."
 ---
-
-**Skill:** `00-recon` | **Lines:** 376 | **Next:** `01-entry-points`
 
 ## What This Skill Does
 
-Scans repository structure to build a codebase mental model. Detects languages, frameworks, build systems, project organization, and deployment configuration.
+Scans the repository structure to build a grounded mental model of the codebase before making any architectural claims. Detects programming languages, frameworks, build systems, project organization, and file distribution. For each technology detected, it records the specific config file that proves the claim and the version where detectable.
+
+Without this step, the agent risks misidentifying the tech stack, missing entire projects in a monorepo, or making assumptions that compound errors through every subsequent skill.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 1 -- Reconnaissance |
 | **Skill** | `00-recon` |
-| **Stage** | Reconnaissance |
-| **Runs after** | Previous skill output |
+| **Runs after** | (none -- first skill in the pipeline) |
 | **Runs before** | `01-entry-points` |
 
-## Key Outputs
+<InputOutput
+  inputs={[]}
+  outputs={[
+    {file: "outputs/00-recon.md", sections: ["Scan Scope and Approach", "Repositories in Scope", "Technology Stack", "Project Organization", "File Inventory", "Build System & CI/CD", "Anomalies and Surprises", "Items Flagged [NEEDS VERIFICATION]"]}
+  ]}
+  downstream={["01-entry-points", "02-actors-and-boundaries", "03-external-systems", "04-containers", "05-components", "06-capabilities"]}
+/>
 
-The output file (`outputs/00-recon.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Enumerate repositories in scope** -- List every repo included in the discovery with its name, path, and remote URL
+2. **Scan root structure** -- Classify every top-level file and directory as source code, configuration, build system, CI/CD, containerization, infrastructure, documentation, test, tooling, or dependency lock file
+3. **Detect technology stack** -- Identify languages, frameworks, and runtime versions from build and config files, citing the specific file path as evidence for each claim
+4. **Identify project organization** -- Determine whether the codebase is a single project, multi-project, monorepo, or multi-repo, and list every sub-project with its technology and role
+5. **Count and classify files** -- Count files per project by category (source, test, config, markup, docs, build) and flag notable ratios such as low test-to-source coverage
+6. **Detect build system and CI/CD** -- Identify the build tool, CI/CD pipelines, containerization status, and infrastructure-as-code presence with file path evidence for each
+7. **Scan for anomalies and surprises** -- Flag mixed framework versions, dead projects, README contradictions, ghost dependencies, and anything unexpected
+8. **Compile recon output** -- Assemble all findings into the output file following the required structure
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Technology Stack | Every detected language and framework with version and the config file path that proves it |
+| Project Organization | Organization type (single/multi/monorepo/multi-repo) with a table of every project, its directory, technology, and role |
+| File Inventory | Per-project file counts by category with test-to-source ratios and flags for anomalies |
+| Build System & CI/CD | Build tool, CI/CD pipelines, containerization status, and infrastructure-as-code presence |
+| Anomalies and Surprises | Anything unexpected found during the scan with evidence and potential impact |
+
+<OutputExample filename="outputs/00-recon.md">
+
+```markdown
+## 3. Technology Stack
+
+| Technology | Version | Evidence (file path) |
+| --- | --- | --- |
+| C# / .NET | 8.0 | order-api/OrderFlow.Api.csproj (TargetFramework: net8.0) |
+| ASP.NET Core | 8.0 | order-api/Program.cs (WebApplication.CreateBuilder) |
+| Angular | 17.1.0 | order-ui/package.json (dependencies: @angular/core 17.1.0) |
+| TypeScript | 5.3 | order-ui/tsconfig.json |
+| PostgreSQL driver | 8.0.1 | order-api/OrderFlow.Api.csproj (Npgsql.EntityFrameworkCore.PostgreSQL 8.0.1) |
 ```
-Read skills/00-recon/SKILL.md and execute it against this codebase.
-Save output to outputs/00-recon.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Every repository in scope is listed with its path
+- Every detected language has a file extension count AND a config file citation
+- Every detected framework has a config file path AND a version where available
+- Project organization type is determined with structural evidence
+- File counts are recorded per project for source, test, config, and docs
+- Build system, CI/CD pipeline, and containerization status are each determined (present with details, or explicitly absent)
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/00-recon/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/00-recon/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/00-recon/SKILL.md) in the repository.

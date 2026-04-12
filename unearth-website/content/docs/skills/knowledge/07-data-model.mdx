@@ -1,44 +1,92 @@
 ---
 title: "Data Model"
-description: "Catalogs storage entities, projections, DTOs, and view models. Maps relationships, cross-project usage, and capability alignment."
+description: "Discovers all persistent entities, their storage mechanisms, relationships, and projections across the codebase, mapping each to its owning capability and identifying schema risks."
 ---
-
-**Skill:** `07-data-model` | **Lines:** 374 | **Next:** `08-patterns`
 
 ## What This Skill Does
 
-Catalogs storage entities, projections, DTOs, and view models. Maps relationships, cross-project usage, and capability alignment.
+Discovers every data entity in the codebase -- what gets persisted, where it is stored, how it is shaped for different consumers, and which capabilities own it. Classifies entities by type (storage, projection, DTO, view model), maps storage mechanisms, traces cross-project projections, and identifies data model risks.
+
+Without this step, the agent knows what the system does (capabilities) but not what data it manages. Data model understanding is essential for migration planning, database decomposition, and identifying hidden coupling through shared entities.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 3 -- Knowledge |
 | **Skill** | `07-data-model` |
-| **Stage** | Knowledge |
-| **Runs after** | Previous skill output |
+| **Runs after** | `06-capabilities` |
 | **Runs before** | `08-patterns` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "05-components", section: "Business Components"},
+    {skill: "06-capabilities", section: "L1 Capability Definitions"},
+    {skill: "03-external-systems", section: "External Systems Inventory"}
+  ]}
+  outputs={[
+    {file: "outputs/07-data-model.md", sections: ["Entity Inventory", "Entity Attribute Details", "Entity Relationships", "Cross-Project Entity Usage", "Capability Alignment", "Data Model Findings"]}
+  ]}
+  downstream={["08-patterns", "10-blueprint", "11-tech-debt", "12-traceability", "13-documentation"]}
+/>
 
-The output file (`outputs/07-data-model.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load upstream context** -- Extract entity file locations, L1 capabilities for ownership mapping, and data store technologies from upstream outputs.
+2. **Discover storage entities** -- Scan for persisted entities across all storage technologies (relational, document, graph, blob, cache) using ORM and framework patterns.
+3. **Discover projections and DTOs** -- Catalog request DTOs, response DTOs, event payloads, view models, and projections that carry data between layers.
+4. **Map entity attributes** -- Document the full attribute structure (fields, types, constraints, business meaning) for key entities shared across capabilities.
+5. **Map entity relationships** -- Identify foreign keys, graph edges, embedded documents, implied references, and cross-store references.
+6. **Map cross-project entity usage** -- Trace how entities flow across project boundaries (shared models, BFF projections, duplicate DTOs).
+7. **Align entities to capabilities** -- Map each storage entity to its owning L1 capability and flag entities shared across 3+ capabilities as coupling hotspots.
+8. **Identify data model risks** -- Review for missing primary keys, implied references without constraints, cross-store references, schema-less risks, and high-coupling entities.
+9. **Compile data model output** -- Assemble all findings into the final output file.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Entity Inventory | All storage entities and projections/DTOs with file paths, storage technology, and type classification |
+| Entity Attribute Details | Field-level documentation for key entities with constraints and business meaning |
+| Entity Relationships | Relationship map including explicit FKs, graph edges, and implied references |
+| Cross-Project Entity Usage | How entities appear across core API, BFF, and frontend in different forms |
+| Capability Alignment | Entity-to-capability ownership mapping with coupling hotspot identification |
+| Data Model Findings | Missing constraints, cross-store references, and schema risks with severity |
+
+<OutputExample filename="outputs/07-data-model.md">
+
+```markdown
+## 5. Capability Alignment
+
+| Entity | Owning Capability | Shared? | Referenced By |
+| --- | --- | --- | --- |
+| Order | L1-1: Order Management | Yes | L1-3: Payments, L1-4: Notifications |
+| Product | L1-2: Product Catalog | Yes | L1-1: Order Management, L1-5: Reporting |
+| Customer | L1-6: User Management | Yes | L1-1: Order Management, L1-4: Notifications |
+| ShipmentTracking | L1-1: Order Management | No | -- |
+
+### Coupling Hotspots
+
+| Entity | Capabilities (count) | Risk |
+| --- | ---:| --- |
+| Customer | 3 | HIGH -- changes to Customer schema affect Order Management, Notifications, and User Management |
+| Product | 2 | MEDIUM -- referenced by Order Management for line item details |
 ```
-Read skills/07-data-model/SKILL.md and execute it against this codebase.
-Save output to outputs/07-data-model.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- All storage technologies from upstream are represented in the entity inventory
+- Storage entities are discovered with file paths, storage type, and collection/table names
+- Projections, DTOs, and view models are cataloged separately from storage entities
+- Entity relationships are mapped (explicit FK/edge and implied references)
+- Every storage entity is aligned to an owning L1 capability
+- Coupling hotspots (entities shared by 3+ capabilities) are flagged with risk assessment
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/07-data-model/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/07-data-model/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/07-data-model/SKILL.md) in the repository.

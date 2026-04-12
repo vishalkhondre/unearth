@@ -1,44 +1,87 @@
 ---
 title: "External Systems"
-description: "Identifies every external system the codebase communicates with by scanning packages, configuration, and HTTP clients."
+description: "Maps every external system the codebase communicates with -- databases, third-party APIs, cloud services, identity providers, message brokers, caches, and observability platforms."
 ---
-
-**Skill:** `03-external-systems` | **Lines:** 331 | **Next:** `04-containers`
 
 ## What This Skill Does
 
-Identifies every external system the codebase communicates with by scanning packages, configuration, and HTTP clients.
+Maps every external dependency the system communicates with by scanning package references, connection strings, configuration files, and HTTP service client patterns. Each external system is classified by type, access direction, and which projects use it.
+
+Without this step, the C4 Context diagram will be incomplete (missing external systems the platform depends on), and the Container diagram will lack the data stores, message brokers, and identity providers that containers connect to.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 2 -- Structure |
 | **Skill** | `03-external-systems` |
-| **Stage** | Structure |
-| **Runs after** | Previous skill output |
+| **Runs after** | `02-actors-and-boundaries` |
 | **Runs before** | `04-containers` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "00-recon", section: "Technology Stack"},
+    {skill: "00-recon", section: "Project Organization"},
+    {skill: "02-actors-and-boundaries", section: "System Boundary"}
+  ]}
+  outputs={[
+    {file: "outputs/03-external-systems.md", sections: ["Extraction Method", "External Systems Inventory", "Package-to-System Mapping", "Configuration-to-System Mapping", "Cross-Reference with Boundary Definition", "Summary", "Items Flagged [NEEDS VERIFICATION]"]}
+  ]}
+  downstream={["04-containers", "05-components", "07-data-model", "09-dependencies", "13-documentation"]}
+/>
 
-The output file (`outputs/03-external-systems.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load upstream context** -- Read the tech stack and project list from `00-recon`, the boundary definition from `02-actors-and-boundaries`, and optionally non-HTTP trigger sources from `01-entry-points`
+2. **Scan package references** -- Search dependency manifests (csproj, package.json, requirements.txt, pom.xml, etc.) for packages that map to external systems: database drivers, message broker clients, cloud SDKs, identity providers, observability, and API clients
+3. **Scan configuration files** -- Search for connection strings, service endpoint URLs, API keys, queue/topic names, and storage account references in framework-specific config files
+4. **Scan for HTTP service clients** -- Find external API calls via HttpClient, IHttpClientFactory, Refit, RestSharp, axios, requests, gRPC channels, and SOAP/WCF proxies
+5. **Classify external systems** -- Categorize each as data store, cache, messaging, identity and security, API gateway, observability, compute, analytics, or adjacent service, and record access direction (read, write, or read+write)
+6. **Cross-reference with boundary definition** -- Compare findings against the "Outside the Boundary" table from `02-actors-and-boundaries` and flag discrepancies or new discoveries
+7. **Build package-to-system mapping** -- Create a reusable reference table mapping every relevant package to its external system
+8. **Compile external systems output** -- Assemble findings into the output file
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| External Systems Inventory | Each system with ID, purpose, classification, packages, projects, config keys, access direction, and evidence |
+| Package-to-System Mapping | Every relevant package mapped to its external system for downstream reuse |
+| Configuration-to-System Mapping | Config keys and file paths mapped to external systems |
+| Cross-Reference with Boundary | Reconciliation between boundary definition and scan findings, with discrepancies flagged |
+
+<OutputExample filename="outputs/03-external-systems.md">
+
+```markdown
+## 2. External Systems Inventory
+
+### ES-01: PostgreSQL
+
+| Attribute | Value |
+| --- | --- |
+| **Purpose** | Primary relational data store for orders, customers, and inventory |
+| **Classification** | Data store |
+| **Packages** | Npgsql.EntityFrameworkCore.PostgreSQL 8.0.1 |
+| **Projects** | order-api |
+| **Config keys** | ConnectionStrings:OrderDb |
+| **Access direction** | READ+WRITE |
+| **Evidence** | order-api/OrderFlow.Api.csproj, order-api/appsettings.json |
 ```
-Read skills/03-external-systems/SKILL.md and execute it against this codebase.
-Save output to outputs/03-external-systems.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Every project from `outputs/00-recon.md` Section 4 has been scanned for package references
+- Every relevant package is mapped to an external system
+- Configuration files have been scanned for connection strings and service endpoints
+- HTTP service clients have been identified and mapped to external systems
+- Every external system has ID, purpose, classification, packages, projects, config keys, access direction, and evidence
+- Cross-reference with the boundary definition from `02-actors-and-boundaries` is done and discrepancies flagged
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/03-external-systems/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/03-external-systems/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/03-external-systems/SKILL.md) in the repository.

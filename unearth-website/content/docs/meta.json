@@ -2,23 +2,14 @@
   "title": "Documentation",
   "pages": [
     "index",
-    "---Getting Started---",
     "getting-started/...",
-    "---Tutorial---",
     "tutorial/...",
-    "---Concepts---",
     "concepts/...",
-    "---Skills Reference---",
     "skills/...",
-    "---Blueprints---",
     "blueprints/...",
-    "---Stack Adapters---",
     "stack-adapters/...",
-    "---Guides---",
     "guides/...",
-    "---Advanced---",
     "advanced/...",
-    "---Reference---",
     "reference/..."
   ]
 }

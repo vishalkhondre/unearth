@@ -1,44 +1,83 @@
 ---
 title: "Dependencies"
-description: "Maps business-to-business, business-to-technical, and external package dependencies. Flags EOL risks and coupling hotspots."
+description: "Maps internal component dependencies, external package dependencies with version and risk analysis, and shared library coupling to identify critical coupling points and EOL risks."
 ---
-
-**Skill:** `09-dependencies` | **Lines:** 352 | **Next:** `10-blueprint`
 
 ## What This Skill Does
 
-Maps business-to-business, business-to-technical, and external package dependencies. Flags EOL risks and coupling hotspots.
+Maps the full dependency landscape -- how components depend on each other internally, what external packages they consume, and where shared libraries create coupling. Identifies version risks, EOL frameworks, dead dependencies, and critical coupling points.
+
+Without this step, the agent understands patterns and structure but not the specific dependency chains that constrain evolution. A god class cannot be decomposed if 6 other components depend on it. A framework cannot be upgraded if conflicting versions exist across containers. Dependencies determine what is practically possible in modernization.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 3 -- Knowledge |
 | **Skill** | `09-dependencies` |
-| **Stage** | Knowledge |
-| **Runs after** | Previous skill output |
+| **Runs after** | `08-patterns` |
 | **Runs before** | `10-blueprint` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "05-components", section: "Business Components"},
+    {skill: "03-external-systems", section: "Package-to-System Mapping"},
+    {skill: "04-containers", section: "Shared Libraries"}
+  ]}
+  outputs={[
+    {file: "outputs/09-dependencies.md", sections: ["Business-to-Business Dependencies", "Business-to-Technical Dependencies", "External Package Dependencies", "Shared Library Coupling", "Critical Coupling Points", "Dependency Statistics"]}
+  ]}
+  downstream={["10-blueprint", "11-tech-debt", "12-traceability", "13-documentation"]}
+/>
 
-The output file (`outputs/09-dependencies.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load upstream context** -- Extract component inventories, package-to-system mappings, and shared library lists from upstream outputs.
+2. **Map business-to-business dependencies** -- Trace dependencies between business components within each container (direct calls, shared repositories, shared data stores, event coupling, HTTP calls) and flag circular dependencies.
+3. **Map business-to-technical dependencies** -- Identify which technical components (auth, ORM, validation, resilience, logging) each business component depends on, and compute fan-in for each technical component.
+4. **Map external package dependencies** -- Inventory all external packages across every project with version, purpose, and risk flags (EOL, major version behind, pre-release, version conflict, unused).
+5. **Analyze shared library coupling** -- For each shared library, assess what it provides, which containers consume it, coupling severity, interface stability, and extraction difficulty.
+6. **Identify critical coupling points** -- Synthesize findings to flag components with fan-in greater than 5, circular dependencies, shared databases, business logic in shared libraries, version conflicts, and EOL frameworks.
+7. **Produce dependency statistics** -- Compile summary metrics for all dependency categories.
+8. **Compile dependencies output** -- Assemble all findings into the final output file.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Business-to-Business Dependencies | Intra-container dependency map with coupling mechanism and direction, plus circular dependency findings |
+| Business-to-Technical Dependencies | Per-component technical dependency list with fan-in analysis for highest-impact technical components |
+| External Package Dependencies | Per-project package inventory with version, purpose, and risk flags |
+| Shared Library Coupling | Shared library analysis with coupling severity and interface stability |
+| Critical Coupling Points | Prioritized list of the most impactful coupling constraints with blast radius and impact |
+| Dependency Statistics | Summary metrics across all dependency categories |
+
+<OutputExample filename="outputs/09-dependencies.md">
+
+```markdown
+## 5. Critical Coupling Points
+
+| # | Coupling Point | Type | Fan-In / Blast Radius | Impact | Constraint |
+| --- | --- | --- | --- | --- | --- |
+| 1 | OrderDbContext | shared data store | 4 business components | Schema changes require coordinated updates across Order, Payment, Shipping, and Notification components | Prevents independent data migration per capability |
+| 2 | SharedModels library | shared library | 3 containers | Contains OrderDto and CustomerDto used by order-api, order-bff, and order-ui | Prevents independent deployment of any container |
+| 3 | Newtonsoft.Json | version conflict | 2 containers | order-api uses 13.0.3, order-bff uses 12.0.1 | Blocks unified package upgrade and shared library extraction |
 ```
-Read skills/09-dependencies/SKILL.md and execute it against this codebase.
-Save output to outputs/09-dependencies.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Business-to-business dependencies are mapped for all analyzed containers
+- External packages are inventoried for every project with version and risk flags
+- Version conflicts across projects are identified
+- EOL or deprecated frameworks are flagged with dates and affected containers
+- Shared libraries are analyzed for coupling severity and interface stability
+- Critical coupling points are identified with impact and constraint assessment
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/09-dependencies/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/09-dependencies/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/09-dependencies/SKILL.md) in the repository.

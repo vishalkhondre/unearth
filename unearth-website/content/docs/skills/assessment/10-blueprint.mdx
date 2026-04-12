@@ -1,44 +1,88 @@
 ---
 title: "Blueprint Comparison"
-description: "Compares discovered capabilities against an industry blueprint. Rates coverage, identifies overlaps, and produces a prioritized roadmap."
+description: "Compares the discovered L1 capabilities against an industry reference architecture (blueprint) to identify full matches, partial coverage, critical gaps, and moderate gaps."
 ---
-
-**Skill:** `10-blueprint` | **Lines:** 340 | **Next:** `11-tech-debt`
 
 ## What This Skill Does
 
-Compares discovered capabilities against an industry blueprint. Rates coverage, identifies overlaps, and produces a prioritized roadmap.
+Compares the system's discovered capabilities against an industry reference architecture to answer: "How complete is this system compared to what a mature platform in this domain should have?" Produces a structured gap analysis with coverage scoring, overlap detection, and a prioritized remediation roadmap.
+
+Without this step, the agent can describe what the system does but cannot assess what it is missing. Gap analysis against an industry blueprint reveals blind spots that internal teams may not see because they have normalized the absence.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 4 -- Assessment |
 | **Skill** | `10-blueprint` |
-| **Stage** | Assessment |
-| **Runs after** | Previous skill output |
+| **Runs after** | `09-dependencies` |
 | **Runs before** | `11-tech-debt` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "06-capabilities", section: "L1 Capability Definitions"},
+    {skill: "06-capabilities", section: "L2 Sub-Capability Inventory"},
+    {skill: "blueprints/*", section: "Industry reference blueprint matching the system domain"}
+  ]}
+  outputs={[
+    {file: "outputs/10-blueprint.md", sections: ["Reference Blueprint", "Capability-to-Blueprint Mapping", "Gap Analysis", "Overlap Analysis", "Redundancies", "Scorecard", "Prioritized Roadmap"]}
+  ]}
+  downstream={["11-tech-debt", "13-documentation"]}
+/>
 
-The output file (`outputs/10-blueprint.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Select the Blueprint.** Choose the industry blueprint from `blueprints/` that best matches the system's domain. If no exact match exists, use the closest available and note inapplicable capabilities.
+2. **Map Capabilities to Blueprint.** For each blueprint capability, determine coverage level: Full, Partial, Gap, or Not Applicable. Record the system L1 that covers it and cite specific evidence.
+3. **Classify Gaps.** For each Gap or Partial finding, classify business impact as Critical Gap, Moderate Gap, or Partial Coverage. Document what is missing, the impact, and a recommendation.
+4. **Analyze Overlaps.** In multi-project systems, identify where capabilities span projects and classify overlap type: pass-through, DTO reshaping, split logic, or duplicated logic.
+5. **Identify Redundancies.** Find model/DTO duplication, mock implementations mirroring live code, dead features, and parallel implementations.
+6. **Produce Scorecard.** Compile blueprint coverage percentage, gap counts by severity, overlap counts, and redundancy counts.
+7. **Build Prioritized Roadmap.** Organize recommendations into near-term (0-6 months), mid-term (6-12 months), and long-term (12+ months) horizons, each referencing specific gap or redundancy IDs.
+8. **Compile Blueprint Comparison Output.** Assemble all findings into the output file.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Reference Blueprint | Blueprint name, domain, source frameworks, and full capability list |
+| Capability-to-Blueprint Mapping | Every blueprint capability mapped to a system L1 with coverage level and evidence |
+| Gap Analysis | Critical gaps, moderate gaps, and partial coverage items with impact and recommendations |
+| Overlap Analysis | Capabilities spanning multiple projects, classified by overlap type and severity |
+| Redundancies | Duplicated models, parallel implementations, and dead features with maintenance impact |
+| Scorecard | Summary metrics: coverage percentage, gap counts, overlap counts |
+| Prioritized Roadmap | Near-term, mid-term, and long-term recommendations referencing specific IDs |
+
+<OutputExample filename="outputs/10-blueprint.md">
+
+```markdown
+## 6. Scorecard
+
+| Dimension | Score | Notes |
+| --- | --- | --- |
+| Blueprint Coverage | 9/14 (64%) | 7 Full + 2 Partial |
+| Critical Gaps | 2 | G1: Inventory Management, G2: Returns Processing |
+| Moderate Gaps | 1 | G3: Loyalty and Rewards |
+| Partial Capabilities | 2 | P1: Notifications (email only), P2: Analytics (no real-time) |
+| Overlaps (medium+) | 1 | Order validation split across order-api and order-bff |
+| Redundancies | 2 | R1: OrderDto in both order-api and order-bff, R2: dead coupon module |
 ```
-Read skills/10-blueprint/SKILL.md and execute it against this codebase.
-Save output to outputs/10-blueprint.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Every blueprint capability is mapped to a system L1 or marked as Gap/N/A
+- Coverage levels (Full/Partial/Gap/N/A) have specific evidence or assessment text
+- Gaps are classified as Critical or Moderate with impact and recommendation
+- Partial coverage items specify what exists and what is missing
+- Overlap analysis covers all L1 capabilities that span multiple projects
+- Scorecard totals reconcile with the detailed mapping
+- Prioritized roadmap has near-term, mid-term, and long-term sections with specific IDs
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/10-blueprint/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/10-blueprint/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/10-blueprint/SKILL.md) in the repository.

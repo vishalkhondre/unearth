@@ -1,44 +1,87 @@
 ---
 title: "Patterns"
-description: "Detects structural, domain, communication, security, and anti-patterns. Includes absent-pattern detection."
+description: "Detects architecture patterns and anti-patterns from structural and knowledge outputs, covering structural, domain, communication, and security patterns with evidence-backed assessments."
 ---
-
-**Skill:** `08-patterns` | **Lines:** 348 | **Next:** `09-dependencies`
 
 ## What This Skill Does
 
-Detects structural, domain, communication, security, and anti-patterns. Includes absent-pattern detection.
+Detects the architecture patterns and anti-patterns present in the codebase by synthesizing evidence from structural analysis (containers, components) and knowledge extraction (capabilities, data model). Each pattern is classified with evidence, scope, and an assessment of whether it is well-implemented, partial, or problematic.
+
+Without this step, the agent can describe what the system does and how it is structured, but cannot characterize how well it is structured. Pattern detection reveals intentional design decisions, accidental complexity, and structural risks that directly inform tech debt assessment and modernization planning.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 3 -- Knowledge |
 | **Skill** | `08-patterns` |
-| **Stage** | Knowledge |
-| **Runs after** | Previous skill output |
+| **Runs after** | `07-data-model` |
 | **Runs before** | `09-dependencies` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "04-containers", section: "Architecture Patterns"},
+    {skill: "05-components", section: "Layer Structure"},
+    {skill: "07-data-model", section: "Entity Attribute Details"}
+  ]}
+  outputs={[
+    {file: "outputs/08-patterns.md", sections: ["Pattern Summary", "Structural Patterns", "Domain Model Patterns", "Anti-Patterns", "Communication Patterns", "Security Patterns", "Absent Patterns", "Pattern Interaction Analysis"]}
+  ]}
+  downstream={["09-dependencies", "11-tech-debt", "13-documentation"]}
+/>
 
-The output file (`outputs/08-patterns.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load upstream context** -- Extract container topology, component layer structures, and data model findings from upstream outputs.
+2. **Detect structural patterns** -- Scan for architecture structure patterns (Layered N-Tier, Clean Architecture, CQRS, Microservices, BFF, Event-Driven, Serverless, and others) with specific evidence signals.
+3. **Detect domain model patterns** -- Identify how the domain is modeled (anemic model, rich model, DDD, active record, data mapper, entity-per-table).
+4. **Detect anti-patterns** -- Catalog structural problems including god classes, fat controllers, circular dependencies, shared databases, distributed monoliths, and missing abstractions with severity ratings.
+5. **Detect communication patterns** -- Analyze how containers communicate (synchronous chains, async decoupling, sagas, orchestration, circuit breakers, resilience gaps).
+6. **Detect security patterns** -- Characterize the authentication and authorization architecture (centralized auth, gateway-level auth, RBAC, per-service auth).
+7. **Compile pattern assessment** -- Produce a structured assessment for each pattern with name, category, scope, evidence, assessment, and impact.
+8. **Compile patterns output** -- Assemble all findings into the final output file.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Pattern Summary | Master table of all detected patterns and anti-patterns with category and assessment |
+| Structural Patterns | Detailed assessment of each architecture pattern with evidence from multiple upstream outputs |
+| Domain Model Patterns | How entities and business logic are organized (anemic vs. rich, DDD indicators) |
+| Anti-Patterns | Cataloged structural problems with severity, evidence, impact, and remediation guidance |
+| Communication Patterns | Inter-container communication style (sync chains, async, resilience) |
+| Security Patterns | Auth architecture characterization (centralized, gateway, per-service) |
+| Absent Patterns | Patterns expected for this type of system but not found, with impact assessment |
+| Pattern Interaction Analysis | How detected patterns complement, conflict with, or amplify each other |
+
+<OutputExample filename="outputs/08-patterns.md">
+
+```markdown
+## 1. Pattern Summary
+
+| # | Pattern | Category | Scope | Assessment |
+| --- | --- | --- | --- | --- |
+| P-01 | Layered N-Tier | structural | order-api | well-implemented |
+| P-02 | BFF (Backend-for-Frontend) | structural | order-bff | partial |
+| P-03 | Anemic Domain Model | domain | order-api | problematic |
+| AP-01 | God Class | anti-pattern | OrderService.cs (847 lines) | HIGH |
+| AP-02 | Missing Abstraction | anti-pattern | order-api data access | MEDIUM |
 ```
-Read skills/08-patterns/SKILL.md and execute it against this codebase.
-Save output to outputs/08-patterns.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Structural patterns are detected with evidence from both container and component analysis
+- Domain model patterns are detected with evidence from data model and component analysis
+- Anti-patterns are cataloged with file-level evidence and severity ratings
+- Communication and security patterns are detected from upstream topology and auth analysis
+- Each pattern has name, category, scope, evidence, assessment, and impact
+- Absent-but-expected patterns are documented with impact assessment
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/08-patterns/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/08-patterns/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/08-patterns/SKILL.md) in the repository.

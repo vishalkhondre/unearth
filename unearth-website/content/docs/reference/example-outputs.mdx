@@ -1,0 +1,185 @@
+---
+title: Example Outputs
+description: Sample output snippets from a full Unearth pipeline run, showing what each stage produces.
+---
+
+These examples show what the Unearth pipeline produces when run against a fictional **OrderFlow** e-commerce platform -- three repositories (order-api, order-bff, order-ui) built with .NET 8, Angular 17, and PostgreSQL. Every snippet below is a condensed excerpt; real outputs are more detailed.
+
+## Stage 1: Reconnaissance
+
+<OutputExample filename="outputs/00-recon.md">
+
+### Technology Stack
+
+| Technology | Version | Evidence |
+|------------|---------|----------|
+| .NET | 8.0 | `TargetFramework` in `OrderApi.csproj` |
+| ASP.NET Core | 8.0 | `Microsoft.AspNetCore.App` framework ref |
+| Angular | 17.3 | `@angular/core` in `order-ui/package.json` |
+| PostgreSQL | 15 | `Npgsql` 8.0.1 in `OrderApi.csproj` |
+| Redis | 7.x | `StackExchange.Redis` in `OrderBff.csproj` |
+
+### Project Organization
+
+**Type:** Multi-repo (3 repositories)
+
+| Project | Directory | Technology | Role |
+|---------|-----------|-----------|------|
+| OrderApi | `order-api/src/` | .NET 8.0 | REST API |
+| OrderBff | `order-bff/src/` | .NET 8.0 | Backend-for-Frontend |
+| OrderUi | `order-ui/` | Angular 17 | Single Page Application |
+| OrderApi.Tests | `order-api/tests/` | xUnit | Test project |
+
+</OutputExample>
+
+<OutputExample filename="outputs/01-entry-points.md">
+
+### Summary
+
+| Project | HTTP | Event Triggers | Background Workers | Health Probes |
+|---------|-----:|---------------:|-------------------:|--------------:|
+| OrderApi | 47 | 3 | 2 | 1 |
+| OrderBff | 31 | 0 | 0 | 1 |
+| OrderUi | 0 | 0 | 0 | 0 |
+| **Total** | **78** | **3** | **2** | **2** |
+
+**Total entry points: 85**
+
+</OutputExample>
+
+## Stage 2: Structure
+
+<OutputExample filename="outputs/04-containers.md">
+
+### Container Inventory
+
+| ID | Name | Technology | Type | Entry Points | Primary Responsibility | Deploy Target |
+|----|------|-----------|------|-------------:|----------------------|---------------|
+| CON-001 | Order API | .NET 8.0 | REST API | 47 | Order CRUD, inventory, payments | Azure App Service |
+| CON-002 | Order BFF | .NET 8.0 | BFF | 31 | Frontend aggregation, auth relay | Azure App Service |
+| CON-003 | Order UI | Angular 17 | SPA | 0 | Customer and admin interfaces | Azure Static Web Apps |
+
+### Communication Topology
+
+```
+                    ┌─────────────┐
+   Customer ──────► │  CON-003    │
+                    │  Order UI   │
+                    └──────┬──────┘
+                           │ HTTPS
+                    ┌──────▼──────┐
+                    │  CON-002    │
+                    │  Order BFF  │
+                    └──────┬──────┘
+                           │ HTTPS
+                    ┌──────▼──────┐      ┌────────────┐
+                    │  CON-001    │─────►│ PostgreSQL  │
+                    │  Order API  │      └────────────┘
+                    └──────┬──────┘
+                           │ AMQP
+                    ┌──────▼──────┐
+                    │  RabbitMQ   │
+                    └─────────────┘
+```
+
+</OutputExample>
+
+## Stage 3: Knowledge
+
+<OutputExample filename="outputs/06-capabilities.md">
+
+### L1 Capabilities
+
+| # | Capability | Projects | Scope |
+|---|-----------|----------|-------|
+| L1-1 | Order Management | API, BFF, UI | Create, update, cancel, fulfill orders |
+| L1-2 | Product Catalog | API, BFF, UI | Product CRUD, categories, variants, media |
+| L1-3 | Inventory Tracking | API, Worker | Stock levels, reservations, low-stock alerts |
+| L1-4 | Customer Accounts | API, BFF, UI | Registration, profiles, addresses, preferences |
+| L1-5 | Payment Processing | API | Payment capture, refunds, provider integration |
+| L1-6 | Shipping & Fulfillment | API, UI | Carrier selection, tracking, delivery status |
+
+**Total:** 6 L1 capabilities, 24 L2 sub-capabilities
+
+### Coverage Verification
+
+| Project | Total Modules | Covered | De-scoped | Coverage % |
+|---------|-------------:|--------:|----------:|-----------|
+| OrderApi | 18 | 17 | 1 | 94% |
+| OrderBff | 12 | 12 | 0 | 100% |
+| OrderUi | 8 | 8 | 0 | 100% |
+| **Total** | **38** | **37** | **1** | **97%** |
+
+</OutputExample>
+
+<OutputExample filename="outputs/07-data-model.md">
+
+### Storage Entities
+
+| Entity | Storage | Collection/Table | Key Fields | Owning Capability |
+|--------|---------|-----------------|------------|-------------------|
+| Order | PostgreSQL | `orders` | `id`, `customer_id` | L1-1: Order Management |
+| OrderLine | PostgreSQL | `order_lines` | `id`, `order_id`, `product_id` | L1-1: Order Management |
+| Product | PostgreSQL | `products` | `id`, `sku` | L1-2: Product Catalog |
+| Customer | PostgreSQL | `customers` | `id`, `email` (unique) | L1-4: Customer Accounts |
+| InventoryItem | PostgreSQL | `inventory` | `product_id`, `warehouse_id` | L1-3: Inventory Tracking |
+
+### Coupling Hotspots
+
+| Entity | Capabilities (count) | Risk |
+|--------|--------------------:|------|
+| Product | 4 | HIGH -- referenced by Orders, Inventory, Catalog, Shipping |
+| Customer | 3 | MEDIUM -- referenced by Orders, Accounts, Payments |
+
+</OutputExample>
+
+## Stage 4: Assessment
+
+<OutputExample filename="outputs/10-blueprint.md">
+
+### Scorecard
+
+| Dimension | Score | Notes |
+|-----------|-------|-------|
+| Blueprint Coverage | 18/22 (82%) | 14 full + 4 partial |
+| Critical Gaps | 2 | Promotions engine, returns management |
+| Moderate Gaps | 2 | Wishlist, gift cards |
+| Overlaps (medium+) | 3 | Order validation split across API and BFF |
+
+### Critical Gaps
+
+| # | Missing Capability | Impact | Recommendation |
+|---|-------------------|--------|----------------|
+| G1 | Promotions Engine | No coupon/discount support; limits marketing | Build rules-based promotion service |
+| G2 | Returns Management | Manual returns process; no RMA workflow | Add return authorization and refund pipeline |
+
+</OutputExample>
+
+<OutputExample filename="outputs/11-tech-debt.md">
+
+### Debt Register (top items)
+
+| ID | Finding | Category | Severity | Effort | Evidence |
+|----|---------|----------|----------|--------|---------|
+| TD-CQ-01 | OrderService.cs is 1,247 lines | Code quality | CRITICAL | L | 14 public methods, 6 responsibilities |
+| TD-TC-01 | PaymentProcessor has zero tests | Test coverage | CRITICAL | M | `PaymentProcessor.cs` (312 lines, untested) |
+| TD-DP-01 | .NET 7 runtime in order-bff | Dependency | HIGH | L | EOL November 2024, affects CON-002 |
+| TD-AR-01 | Shared database without isolation | Architecture | HIGH | XL | OrderApi and InventoryWorker share `orders` DB |
+| TD-RS-01 | No retry policy on BFF-to-API calls | Resilience | HIGH | S | `HttpClient` calls without Polly policies |
+
+### Summary
+
+| Metric | Value |
+|--------|-------|
+| Total debt items | 23 |
+| Critical | 3 |
+| High | 8 |
+| Medium | 9 |
+| Low | 3 |
+| Estimated total effort | 42 dev-weeks |
+
+</OutputExample>
+
+---
+
+These examples are illustrative. Real pipeline outputs are more detailed, with full evidence trails (file paths, line counts, class names) for every claim. Run Unearth against your own codebase to see what it finds.

@@ -1,44 +1,99 @@
 ---
 title: "Components"
-description: "Identifies internal layers, business components, technical components, business rules, god classes, and test coverage within a single container."
+description: "Deep-dives into a single container's internals to identify business components, technical components, internal layers, god classes, test coverage gaps, and business rules."
 ---
-
-**Skill:** `05-components` | **Lines:** 426 | **Next:** `06-capabilities`
 
 ## What This Skill Does
 
-Identifies internal layers, business components, technical components, business rules, god classes, and test coverage within a single container.
+Deep-dives into a single container to map its internal structure at the C4 component level. Identifies business components (domain logic units), technical components (cross-cutting infrastructure), internal layers, god classes, test coverage, and business rules. This skill is repeatable -- run it once per container selected for analysis.
+
+Without this step, the agent sees containers as black boxes -- it can describe what they do at a high level but cannot identify internal coupling, god classes, untested code paths, or business rule locations that are critical for capability extraction and tech debt assessment.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 2 -- Structure |
 | **Skill** | `05-components` |
-| **Stage** | Structure |
-| **Runs after** | Previous skill output |
+| **Runs after** | `04-containers` |
 | **Runs before** | `06-capabilities` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "04-containers", section: "Container Inventory"},
+    {skill: "04-containers", section: "Container-to-External-System Communication"}
+  ]}
+  outputs={[
+    {file: "outputs/05-components-{container-id}.md", sections: ["Container Under Analysis", "Layer Structure", "Business Components", "Technical Components", "God Classes and Complexity Hotspots", "Test Coverage", "Intra-Container Dependencies", "Key Findings", "Items Flagged [NEEDS VERIFICATION]"]}
+  ]}
+  downstream={["06-capabilities", "07-data-model", "08-patterns", "09-dependencies", "11-tech-debt", "12-traceability", "13-documentation"]}
+/>
 
-The output file (`outputs/05-components.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Select and scope the container** -- Choose a container from `04-containers` and record its ID, source directory, technology, entry point count, and external connections
+2. **Map internal layer structure** -- Identify architectural layers (entry/presentation, business/application, domain, data access, models/DTOs, validation, configuration, infrastructure, cross-cutting) with directory paths and file counts
+3. **Identify business components** -- Group files by business function by tracing from entry points through services, repositories, and models to find cohesive units
+4. **Identify technical components** -- Catalog cross-cutting infrastructure (authentication, authorization, data access, validation, error handling, logging, configuration, HTTP clients) with which business components use them
+5. **Catalog business rules** -- Extract concrete validation rules, value constraints, state transitions, calculations, authorization rules, and domain invariants with the class and method where each is enforced
+6. **Detect god classes and complexity hotspots** -- Find files over 500 lines, classes with more than 10 public methods, deep nesting, and high coupling, with exact line counts and severity
+7. **Assess test coverage** -- Count test files and methods, identify the test framework, calculate test-to-source ratio, and note coverage gaps per business component
+8. **Map intra-container dependencies** -- Record business-to-technical, business-to-business, and business-to-external dependencies with coupling mechanisms
+9. **Compile components output** -- Assemble findings into the per-container output file
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Layer Structure | Each layer with directory path, file count, and key files |
+| Business Components | Each component with responsibilities, files by layer, business rules, technology stack, and known issues |
+| God Classes and Complexity Hotspots | Files with disproportionate size or complexity, with exact line counts and severity |
+| Test Coverage | Per-component test assessment with specific gaps identified |
+
+<OutputExample filename="outputs/05-components-con-001.md">
+
+```markdown
+## 3. Business Components
+
+### BC-01: Order Management
+
+**Responsibilities:** Handles order creation, status transitions, and order history queries. Enforces validation rules for order line items and shipping addresses.
+
+**Files:**
+
+| Layer | Files |
+| --- | --- |
+| Entry | OrdersController.cs |
+| Service | OrderService.cs, OrderStatusService.cs |
+| Repository | OrderRepository.cs |
+| Models | Order.cs, OrderLineItem.cs, OrderStatus.cs |
+| Validators | CreateOrderValidator.cs |
+| Tests | OrderServiceTests.cs, OrdersControllerTests.cs |
+
+**Business Rules:**
+
+| Rule | Enforced In | Method |
+| --- | --- | --- |
+| Order must have at least one line item | CreateOrderValidator | FluentValidation RuleFor |
+| Order total must equal sum of line items | OrderService.CalculateTotal | Inline check |
+| Only pending orders can be canceled | OrderStatusService.Cancel | State transition guard |
 ```
-Read skills/05-components/SKILL.md and execute it against this codebase.
-Save output to outputs/05-components.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Container is correctly scoped (right directories, right files)
+- Every source file is assigned to a layer
+- Business components are identified by business function, not technology
+- Each business component has responsibilities, files by layer, business rules, technology stack, and known issues
+- God classes are detected with exact line counts and severity
+- Test coverage is assessed per component with specific gaps identified
+- Intra-container dependencies are mapped (business-to-technical, business-to-business, business-to-external)
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/05-components/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/05-components/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/05-components/SKILL.md) in the repository.

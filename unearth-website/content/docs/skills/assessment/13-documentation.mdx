@@ -1,44 +1,105 @@
 ---
 title: "Documentation"
-description: "Capstone skill. Synthesizes all upstream outputs into a comprehensive architecture knowledge base document."
+description: "Compiles all upstream pipeline outputs into a comprehensive architecture document."
 ---
-
-**Skill:** `13-documentation` | **Lines:** 371 | **Next:** `end`
 
 ## What This Skill Does
 
-Capstone skill. Synthesizes all upstream outputs into a comprehensive architecture knowledge base document.
+Compiles all upstream pipeline outputs into a single, comprehensive architecture document. Rather than repeating raw findings, this skill synthesizes, summarizes, and cross-references them into a navigable deliverable that a technical or business stakeholder can read end-to-end or use as a reference.
+
+Without this step, the pipeline produces 12 separate output files that each answer a different question. This skill weaves them into one document that tells the complete story: what the system is, what it does, how it is built, what is working, what is broken, and what to do next.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 4 -- Assessment |
 | **Skill** | `13-documentation` |
-| **Stage** | Assessment |
-| **Runs after** | Previous skill output |
-| **Runs before** | `end` |
+| **Runs after** | `12-traceability` |
+| **Runs before** | (none -- final skill) |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "00-recon", section: "Technology stack, project organization"},
+    {skill: "01-entry-points", section: "System surface area"},
+    {skill: "02-actors-and-boundaries", section: "Actors, boundary definition"},
+    {skill: "03-external-systems", section: "External system inventory"},
+    {skill: "04-containers", section: "Container inventory, communication map"},
+    {skill: "05-components", section: "Component inventories (per container)"},
+    {skill: "06-capabilities", section: "L1/L2 capability map"},
+    {skill: "07-data-model", section: "Entity inventory, relationships"},
+    {skill: "08-patterns", section: "Architecture and anti-patterns"},
+    {skill: "09-dependencies", section: "Dependency landscape, coupling points"},
+    {skill: "10-blueprint", section: "Industry comparison, gaps, roadmap"},
+    {skill: "11-tech-debt", section: "Prioritized debt register"},
+    {skill: "12-traceability", section: "File-to-capability traceability, migration readiness"}
+  ]}
+  outputs={[
+    {file: "outputs/13-documentation.md", sections: ["Executive Summary", "Architecture Overview", "Capability Map", "Data Model Summary", "Pattern Assessment", "Dependency Landscape", "Industry Blueprint Comparison", "Tech Debt Summary", "Migration Readiness", "Recommendations", "Open Questions", "Pipeline Outputs Index"]}
+  ]}
+  downstream={[]}
+/>
 
-The output file (`outputs/13-documentation.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Determine Document Scope.** Check which upstream outputs are available. With a minimum of 8 skills, produce sections 1-6 only. With all 13, produce the full document including assessment sections.
+2. **Write the Executive Summary.** Produce a 1-page summary covering system name, technology stack, scale, architecture style, key strengths, key risks, blueprint coverage, and recommended next steps.
+3. **Write the Architecture Overview.** Compile system context (actors, external systems, boundary), container architecture (inventory, topology, key flows), and component architecture (layer structure, component inventories).
+4. **Write the Capability Map.** Synthesize L1/L2 capabilities, the capability-to-actor matrix, and capability-to-container alignment.
+5. **Write the Data Model Summary.** Summarize entity inventory, key entity profiles, relationship summary, and coupling hotspots.
+6. **Write the Assessment Sections.** Synthesize pattern assessment, dependency landscape, blueprint comparison scorecard, tech debt top findings, and migration readiness.
+7. **Write Recommendations and Open Questions.** Merge roadmaps from S-10 and S-11 into a unified list by time horizon. Compile all `[NEEDS VERIFICATION]` items from every upstream output into a single register.
+8. **Compile Final Document.** Assemble with table of contents and section cross-references.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Executive Summary | 1-page overview: system identity, scale, strengths, risks, and top 3 recommended actions |
+| Architecture Overview | System context, container architecture, and component architecture from S-00 through S-05 |
+| Capability Map | L1/L2 capabilities with actor matrix and container alignment from S-06 |
+| Data Model Summary | Entity inventory, key entities, relationships, and coupling hotspots from S-07 |
+| Pattern Assessment | Detected patterns, anti-patterns, and absent patterns from S-08 |
+| Dependency Landscape | Dependency statistics, coupling points, and EOL risks from S-09 |
+| Blueprint Comparison | Coverage scorecard, critical/moderate gaps, and overlap summary from S-10 |
+| Tech Debt Summary | Top debt items by severity, category breakdown, and quick wins from S-11 |
+| Migration Readiness | Component extraction difficulty and key blockers from S-12 |
+| Recommendations | Unified near-term, mid-term, and long-term roadmap merged from S-10 and S-11 |
+| Open Questions | All `[NEEDS VERIFICATION]` items from all upstream outputs, grouped by theme |
+
+<OutputExample filename="outputs/13-documentation.md">
+
+```markdown
+## 1. Executive Summary
+
+**System:** OrderFlow -- e-commerce order management platform
+**Stack:** .NET 8, Angular 17, PostgreSQL
+**Scale:** 3 repositories, 3 containers, 247 source files, 6 L1 capabilities
+
+| Dimension | Summary |
+| --- | --- |
+| Architecture style | Modular monolith (order-api) with BFF layer (order-bff) and SPA frontend (order-ui) |
+| Blueprint coverage | 9/14 (64%) against e-commerce reference architecture |
+| Tech debt items | 14 total (3 Critical, 4 High, 5 Medium, 2 Low) |
+| Top risk | .NET 7 EOL on order-api -- upgrade to .NET 8 is the highest-priority action |
+| Top strength | Clean capability separation -- 4 of 6 L1 capabilities rate Easy extraction difficulty |
 ```
-Read skills/13-documentation/SKILL.md and execute it against this codebase.
-Save output to outputs/13-documentation.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Executive summary fits on 1 page with all 8 required elements
+- Architecture overview covers context, containers, and components from S-00 through S-05
+- Capability map includes L1/L2 list and capability-to-actor matrix from S-06
+- Assessment sections only include content from skills that were actually run
+- Recommendations are traceable to specific findings (G-ID, TD-ID, R-ID, P-ID)
+- Open questions compile all `[NEEDS VERIFICATION]` items from all upstream outputs
+- No new findings are introduced -- this skill synthesizes only
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/13-documentation/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/13-documentation/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/13-documentation/SKILL.md) in the repository.

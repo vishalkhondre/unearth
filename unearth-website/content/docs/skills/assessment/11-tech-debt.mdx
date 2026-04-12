@@ -1,44 +1,85 @@
 ---
 title: "Tech Debt"
-description: "Harvests findings from all upstream skills. Categorizes debt across 8 types and 4 severity levels. Produces a remediation roadmap."
+description: "Compiles a prioritized tech debt register by harvesting findings from all upstream pipeline outputs."
 ---
-
-**Skill:** `11-tech-debt` | **Lines:** 367 | **Next:** `12-traceability`
 
 ## What This Skill Does
 
-Harvests findings from all upstream skills. Categorizes debt across 8 types and 4 severity levels. Produces a remediation roadmap.
+Compiles a single, prioritized tech debt register by harvesting findings from every upstream skill output. Rather than discovering new issues, this skill synthesizes and classifies the god classes, test gaps, EOL frameworks, missing resilience, coupling hotspots, and anti-patterns already identified across the pipeline into a structured register with severity, effort, and remediation guidance.
+
+Without this step, tech debt findings are scattered across 10 upstream outputs. Stakeholders see individual problems but cannot prioritize across them. This skill consolidates everything into one register that answers: "What should we fix first, and why?"
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 4 -- Assessment |
 | **Skill** | `11-tech-debt` |
-| **Stage** | Assessment |
-| **Runs after** | Previous skill output |
+| **Runs after** | `10-blueprint` |
 | **Runs before** | `12-traceability` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "05-components", section: "God Classes"},
+    {skill: "05-components", section: "Test Coverage"},
+    {skill: "08-patterns", section: "Anti-Patterns"},
+    {skill: "09-dependencies", section: "External Packages"},
+    {skill: "09-dependencies", section: "Critical Coupling Points"},
+    {skill: "10-blueprint", section: "Redundancies"}
+  ]}
+  outputs={[
+    {file: "outputs/11-tech-debt.md", sections: ["Debt Register", "Summary Statistics", "Remediation Roadmap"]}
+  ]}
+  downstream={["12-traceability", "13-documentation"]}
+/>
 
-The output file (`outputs/11-tech-debt.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Harvest Findings from Upstream Outputs.** Systematically scan each upstream output for findings that represent tech debt, recording the source output and section number for traceability.
+2. **Deduplicate and Consolidate.** Merge findings that describe the same underlying issue across multiple outputs, keeping the most specific evidence.
+3. **Classify Each Debt Item.** Assign category (code quality, test coverage, architecture, resilience, security, dependency, data model, redundancy), severity (Critical/High/Medium/Low), effort estimate (Small/Medium/Large/Extra-Large), and blast radius.
+4. **Assign Debt IDs and Group.** Give each item a unique ID using the format `TD-{category}-{number}` (e.g., `TD-CQ-01` for code quality, `TD-SE-02` for security).
+5. **Calculate Debt Summary Statistics.** Compile totals by severity, category, and effort. Identify the top 5 most affected components.
+6. **Build Remediation Roadmap.** Organize items into Quick Wins (high impact, low effort), Planned Work (high impact, medium effort), Strategic Items (high impact, high effort), and Deferred (low impact or blocked).
+7. **Compile Tech Debt Output.** Assemble all findings into the output file.
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Debt Register | All debt items grouped by severity, each with ID, category, source, affected components, effort, and evidence |
+| Summary Statistics | Totals by severity, by category, by effort, estimated dev-weeks, and most affected components |
+| Remediation Roadmap | Quick wins, planned work, strategic items, and deferred items with prerequisites and expected outcomes |
+
+<OutputExample filename="outputs/11-tech-debt.md">
+
+```markdown
+## 1. Debt Register
+
+### CRITICAL
+
+| ID | Finding | Category | Source | Components Affected | Effort | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| TD-DP-01 | .NET 7 EOL -- order-api targets net7.0 | Dependency | S-09 Section 3 | BC-01, BC-02, BC-03 | Large | order-api/order-api.csproj TargetFramework=net7.0 |
+| TD-SE-01 | No auth middleware on 4 internal endpoints | Security | S-05 Section 3 | BC-02: Payments | Medium | PaymentController.cs lines 44-87 missing [Authorize] |
+| TD-RS-01 | No retry policy on PostgreSQL calls | Resilience | S-08 Section 4 | BC-01, BC-04 | Small | OrderRepository.cs -- raw Npgsql without Polly |
 ```
-Read skills/11-tech-debt/SKILL.md and execute it against this codebase.
-Save output to outputs/11-tech-debt.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Findings are harvested from at least 4 upstream outputs
+- Items are deduplicated (no finding appears twice in the register)
+- Each item has: ID, description, category, source, affected components, effort, and evidence
+- Severity levels are differentiated (not all HIGH)
+- Summary statistics reconcile with the detailed register
+- Remediation roadmap covers all items (quick wins + planned + strategic + deferred = total)
+- Each roadmap item has prerequisites identified (or explicitly "none")
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/11-tech-debt/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/11-tech-debt/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/11-tech-debt/SKILL.md) in the repository.

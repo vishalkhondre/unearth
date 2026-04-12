@@ -1,9 +1,11 @@
 ---
 title: Skills Reference
-description: Complete reference for all 15 Unearth discovery skills.
+description: Complete reference for all 14 Unearth discovery skills organized by pipeline stage.
 ---
 
 Each skill is a markdown file (`SKILL.md`) that instructs an AI agent to perform a specific discovery activity. Skills have defined inputs, outputs, process steps, verification gates, and anti-shortcut thinking.
+
+<PipelineFlow compact />
 
 ## Pipeline Overview
 
@@ -11,30 +13,43 @@ Each skill is a markdown file (`SKILL.md`) that instructs an AI agent to perform
 |---|-------|-------|-----------|
 | 00 | [Recon](/docs/skills/reconnaissance/00-recon) | Reconnaissance | Tech stack, project structure |
 | 01 | [Entry Points](/docs/skills/reconnaissance/01-entry-points) | Reconnaissance | HTTP endpoints, event handlers, jobs |
-| 02 | [Actors & Boundaries](/docs/skills/reconnaissance/02-actors-and-boundaries) | Reconnaissance | C4 Context diagram |
+| 02 | [Actors & Boundaries](/docs/skills/reconnaissance/02-actors-and-boundaries) | Reconnaissance | Actor inventory, system boundary |
 | 03 | [External Systems](/docs/skills/structure/03-external-systems) | Structure | External system inventory |
-| 04 | [Containers](/docs/skills/structure/04-containers) | Structure | C4 Container diagram |
-| 05 | [Components](/docs/skills/structure/05-components) | Structure | C4 Component diagram (per container) |
+| 04 | [Containers](/docs/skills/structure/04-containers) | Structure | Container inventory, communication map |
+| 05 | [Components](/docs/skills/structure/05-components) | Structure | Layers, business components, god classes |
 | 06 | [Capabilities](/docs/skills/knowledge/06-capabilities) | Knowledge | L1/L2 capability map |
 | 07 | [Data Model](/docs/skills/knowledge/07-data-model) | Knowledge | Entity inventory and relationships |
-| 08 | [Patterns](/docs/skills/knowledge/08-patterns) | Knowledge | Pattern catalog |
+| 08 | [Patterns](/docs/skills/knowledge/08-patterns) | Knowledge | Pattern and anti-pattern catalog |
 | 09 | [Dependencies](/docs/skills/knowledge/09-dependencies) | Knowledge | Dependency map and risk assessment |
 | 10 | [Blueprint](/docs/skills/assessment/10-blueprint) | Assessment | Industry comparison scorecard |
-| 11 | [Tech Debt](/docs/skills/assessment/11-tech-debt) | Assessment | Categorized debt register |
+| 11 | [Tech Debt](/docs/skills/assessment/11-tech-debt) | Assessment | Prioritized debt register |
 | 12 | [Traceability](/docs/skills/assessment/12-traceability) | Assessment | File-to-capability mapping |
 | 13 | [Documentation](/docs/skills/assessment/13-documentation) | Assessment | Complete architecture document |
 
 ## Skill Anatomy
 
-Every skill follows the same structure:
+Every skill follows the same 10-section structure. This consistency means once you understand one skill, you understand them all.
 
-1. **YAML Frontmatter** — name and description for tool integration
-2. **Pipeline Position** — stage, order, upstream/downstream dependencies
-3. **Inputs** — required and optional data from previous skills
-4. **Process Steps** — numbered steps the agent follows
-5. **Checkpoints** — intermediate verification pauses
-6. **Rationalizations to Resist** — common shortcuts the agent should avoid
-7. **Red Flags** — failure modes to watch for
-8. **Output Specification** — exact format and sections of the output file
-9. **Verification Gate** — checklist the output must pass
-10. **Stack Adapter Hooks** — where framework-specific hints plug in
+1. **YAML Frontmatter** -- name and description for tool integration
+2. **Pipeline Position** -- stage, order, upstream/downstream dependencies
+3. **Inputs** -- required and optional data from previous skills
+4. **Process Steps** -- numbered steps the agent follows literally
+5. **Checkpoints** -- mandatory verification pauses between steps
+6. **Output Format** -- exact Markdown structure the output must follow
+7. **Evidence Standards** -- what counts as proof for each claim type
+8. **Common Rationalizations** -- shortcuts to resist (and why)
+9. **Red Flags** -- signs the output is incomplete or wrong
+10. **Verification Gate** -- checklist the output must pass before the next skill runs
+
+See the [full Skill Anatomy reference](/docs/reference/skill-anatomy) for details on each section.
+
+## Chaining: How Skills Connect
+
+Each skill declares exactly which upstream outputs it reads and which sections it needs:
+
+- **Skill 00 (Recon)** reads the file system directly -- no upstream inputs
+- **Skill 01 (Entry Points)** reads Section 4 of `outputs/00-recon.md` (Project Organization)
+- **Skill 06 (Capabilities)** reads Section 3 from every `outputs/05-components-*.md` file (Business Components)
+- **Skill 13 (Documentation)** reads all 12 upstream outputs to synthesize the final document
+
+This explicit chaining means the pipeline is reproducible -- the same inputs produce the same outputs, and you can re-run any skill to refresh its output without affecting others.

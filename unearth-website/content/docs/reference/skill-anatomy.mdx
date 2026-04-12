@@ -1,10 +1,149 @@
 ---
-title: "Skill Anatomy"
-description: "The standard structure every Unearth skill must follow — 12 sections from frontmatter to verification gate."
+title: Skill Anatomy
+description: The standard 10-section structure every Unearth skill follows -- from YAML frontmatter through verification gate.
 ---
 
-The standard structure every Unearth skill must follow — 12 sections from frontmatter to verification gate.
+Every Unearth skill follows the same 10-section structure. This consistency means an agent (or human) that understands one skill can execute any of them. Here is what each section does and why it exists.
+
+## 1. YAML Frontmatter
+
+Machine-readable metadata for tool integration. Every skill starts with:
+
+```yaml
+---
+name: 00-recon
+description: >
+  Scans repository structure to build an initial codebase mental model.
+  Detects programming languages, frameworks, build systems...
+---
+```
+
+The `name` is the skill identifier used in output file naming. The `description` tells the agent when to activate this skill.
+
+## 2. Pipeline Position
+
+A table declaring where this skill sits in the pipeline:
+
+| Attribute | Value |
+|-----------|-------|
+| **Stage** | 1 -- Reconnaissance |
+| **Skill** | 00-recon |
+| **Runs after** | (none -- first skill) |
+| **Runs before** | 01-entry-points |
+| **Required by** | All downstream skills |
+
+This makes dependencies explicit. An agent knows what must run before and what depends on this skill's output.
+
+## 3. Inputs
+
+Declares exactly which upstream outputs the skill reads, and which sections:
+
+- **Required:** `outputs/00-recon.md` -- Section 4 (Project Organization)
+- **Optional:** Stack adapter for the detected technology
+
+Required inputs must exist before the skill runs. Optional inputs improve results but aren't blocking.
+
+## 4. Process Steps
+
+Numbered steps the agent follows literally. Each step is specific and actionable:
+
+```
+### Step 1: Enumerate Repositories in Scope
+List every repository included in this discovery. For each, record:
+- Repository name or path
+- Remote URL (if available)
+- The root directory where the agent will scan
+```
+
+Steps are not advice -- they are instructions. If an agent can't follow a step literally, the step needs to be rewritten.
+
+## 5. Checkpoints
+
+Mandatory verification pauses embedded between process steps:
+
+```
+CHECKPOINT: The agent must be able to list every repository in scope
+with its root path before proceeding.
+```
+
+If a checkpoint fails, the agent must go back and fix the issue before continuing. Checkpoints prevent error accumulation through the pipeline.
+
+## 6. Output Format
+
+The exact Markdown structure the output file must follow, including section headings, table formats, and required fields:
+
+```markdown
+# Recon -- {System Name}
+
+> **Pipeline stage:** 00-recon
+> **Date:** {date}
+> **Input:** (none -- first skill)
+> **Scope:** {list of repositories/projects}
+
+## 1. Scan Scope and Approach
+...
+## 2. Repositories in Scope
+...
+```
+
+Every output starts with a standard 4-field header: Pipeline stage, Date, Input, and Scope.
+
+## 7. Evidence Standards
+
+A table defining what counts as proof for each claim type:
+
+| Claim Type | Acceptable Evidence |
+|------------|-------------------|
+| Language detected | File extension counts + config file path |
+| Framework detected | Framework-specific config file path with version |
+| Container exists | Deployment config + own entry points + own process startup |
+
+This prevents vague assertions. "The system uses Angular" must be backed by "angular.json found at `/app/angular.json`, version 17.3 per `package.json`."
+
+## 8. Common Rationalizations
+
+A table of shortcuts agents commonly take and why they lead to bad outputs:
+
+| Rationalization | Reality |
+|----------------|---------|
+| "I can tell the tech stack from file extensions alone" | Extensions miss framework versions, build configs, and multi-framework setups |
+| "The README describes the architecture" | READMEs are frequently outdated. The code is the source of truth. |
+
+This is defensive prompt engineering -- anticipating how the agent will try to cut corners and explicitly blocking those paths.
+
+## 9. Red Flags
+
+Signs that the output is incomplete or wrong:
+
+- Making technology claims without citing the config file that proves them
+- File counts that look like estimates rather than actual counts
+- Skipping the anomalies section (every codebase has at least one surprise)
+- Output file under 50 lines for a non-trivial codebase
+
+Red flags help both the agent (during execution) and the reviewer (during quality check).
+
+## 10. Verification Gate
+
+A checklist the output must pass before the skill is considered complete:
+
+- [ ] Every repository in scope is listed with its path
+- [ ] Every detected language has a file extension count AND a config file citation
+- [ ] File counts are recorded per project for source, test, config, and docs
+- [ ] All uncertain findings are flagged as `[NEEDS VERIFICATION]`
+
+The last item is always "All uncertain findings are flagged as `[NEEDS VERIFICATION]`." This ensures the agent acknowledges what it doesn't know rather than hallucinating confidence.
+
+## Quality Requirements
+
+Every skill must meet these minimums:
+
+- At least **2 checkpoints** (verification pauses)
+- At least **3 common rationalizations** (shortcuts to resist)
+- At least **4 red flags** (failure mode indicators)
+- A verification gate with **explicit checklist items**
+- Under **500 lines** total
+- **American English** spelling throughout
 
 ## Full Reference
 
-The complete reference document is in the repository. This page provides a summary — see the source file for the full content with examples and checklists.
+The complete skill format specification with all requirements is in [`docs/skill-anatomy.md`](https://github.com/unearth-dev/unearth/tree/main/docs/skill-anatomy.md) in the repository.

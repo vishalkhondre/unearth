@@ -1,44 +1,84 @@
 ---
 title: "Entry Points"
-description: "Finds every entry point into the system — HTTP endpoints, event handlers, CLI commands, scheduled jobs, WebSocket hubs, and startup hooks."
+description: "Finds every entry point into the system -- HTTP endpoints, event and message handlers, CLI commands, scheduled jobs, background workers, SignalR/WebSocket hubs, and startup hooks."
 ---
-
-**Skill:** `01-entry-points` | **Lines:** 366 | **Next:** `02-actors-and-boundaries`
 
 ## What This Skill Does
 
-Finds every entry point into the system — HTTP endpoints, event handlers, CLI commands, scheduled jobs, WebSocket hubs, and startup hooks.
+Discovers every way into the system -- every HTTP route, event trigger, scheduled job, message handler, WebSocket hub, and background worker. The entry point inventory defines the system's surface area and is the foundation for identifying actors, drawing boundaries, and mapping capabilities.
+
+Without this step, the agent will miss non-obvious entry points (event triggers, blob triggers, change feeds, background workers) that often contain critical business logic invisible from the API surface alone.
 
 ## Pipeline Position
 
 | Attribute | Value |
 |-----------|-------|
+| **Stage** | 1 -- Reconnaissance |
 | **Skill** | `01-entry-points` |
-| **Stage** | Reconnaissance |
-| **Runs after** | Previous skill output |
+| **Runs after** | `00-recon` |
 | **Runs before** | `02-actors-and-boundaries` |
 
-## Key Outputs
+<InputOutput
+  inputs={[
+    {skill: "00-recon", section: "Project Organization"}
+  ]}
+  outputs={[
+    {file: "outputs/01-entry-points.md", sections: ["Scan Scope and Approach", "Summary", "HTTP Endpoints", "Non-HTTP Triggers", "WebSocket and Real-Time Endpoints", "CLI and Console Entry Points", "Scheduled Jobs and Background Workers", "Auth Pattern Summary", "Key Findings", "Items Flagged [NEEDS VERIFICATION]"]}
+  ]}
+  downstream={["02-actors-and-boundaries", "04-containers", "05-components", "06-capabilities"]}
+/>
 
-The output file (`outputs/01-entry-points.md`) contains structured sections with evidence-backed findings. Every claim cites specific files, classes, or configuration entries.
+## Process Steps
 
-## How to Run
+1. **Load recon context** -- Read the project list and technologies from `outputs/00-recon.md` to know which directories to scan
+2. **Scan for HTTP entry points** -- Find all REST/API endpoints using framework-specific patterns (controller attributes, route decorators, minimal API mappings)
+3. **Scan for event and message triggers** -- Search for message queue handlers, event stream consumers, change feed processors, blob triggers, and webhook receivers
+4. **Scan for scheduled jobs and background workers** -- Find timer/cron triggers, hosted services, background workers, and startup/shutdown hooks
+5. **Scan for WebSocket and real-time endpoints** -- Detect SignalR hubs, Socket.io handlers, gRPC services, GraphQL endpoints, and raw WebSocket handlers
+6. **Scan for CLI and console entry points** -- Find command-line interfaces, management commands, and console applications
+7. **Classify entry points by auth level** -- Tag each entry point as anonymous, API key, JWT bearer, role-based, internal/system, or custom
+8. **Compile summary statistics** -- Count and reconcile all entry points by category, flag notable patterns (zero entry point projects, missing health endpoints, inconsistent auth)
+9. **Compile entry points output** -- Assemble findings into the output file
 
+## Key Output Sections
+
+| Section | Content |
+|---------|---------|
+| Summary | Per-project counts of HTTP endpoints, non-HTTP triggers, WebSocket, CLI, background workers, and health probes |
+| HTTP Endpoints | Grouped by project and functional area with route prefix, key routes, and auth level |
+| Non-HTTP Triggers | Event hub, blob, timer, and message triggers with source bindings and connection config |
+| Auth Pattern Summary | Auth level distribution across all endpoints, broken down by project |
+
+<OutputExample filename="outputs/01-entry-points.md">
+
+```markdown
+## 2. Summary
+
+| Project | HTTP Endpoints | Non-HTTP Triggers | WebSocket / Real-Time | CLI / Console | Background Workers | Health Probes |
+| --- | ---:| ---:| ---:| ---:| ---:| ---:|
+| order-api | 24 | 2 | 0 | 0 | 1 | 1 |
+| order-bff | 18 | 0 | 1 | 0 | 0 | 1 |
+| order-ui | 0 | 0 | 0 | 0 | 0 | 0 |
+| **Total** | **42** | **2** | **1** | **0** | **1** | **2** |
+
+**Total entry points: 48**
 ```
-Read skills/01-entry-points/SKILL.md and execute it against this codebase.
-Save output to outputs/01-entry-points.md
-```
+
+</OutputExample>
 
 ## Verification Gate
 
-The skill includes a verification checklist that the output must pass before it is considered complete. Common checks include:
+Before marking complete, the output must pass:
 
-- All sections present and populated
-- Every claim has cited evidence
-- No circular reasoning
-- `[NEEDS VERIFICATION]` markers for uncertain claims
-- Output consistent with upstream skill outputs
+- Every project from `outputs/00-recon.md` Section 4 is scanned for entry points
+- Projects with zero entry points are explicitly noted with the reason (library, tooling, SPA)
+- All HTTP endpoints are recorded with file path, method, route, and auth level
+- All non-HTTP triggers are recorded with file path, trigger type, source, and connection config
+- Scheduled jobs and background workers are recorded (or explicitly absent with significance noted)
+- Auth levels are classified for all endpoints
+- Summary table totals are reconcilable (categories sum to total)
+- All uncertain findings are flagged as `[NEEDS VERIFICATION]`
 
-## Full Skill File
+## Full Skill Reference
 
-The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in `skills/01-entry-points/SKILL.md` in the repository.
+The complete skill with all process steps, checkpoints, rationalizations, red flags, and verification gates is in [`skills/01-entry-points/SKILL.md`](https://github.com/unearth-dev/unearth/tree/main/skills/01-entry-points/SKILL.md) in the repository.
