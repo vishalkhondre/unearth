@@ -365,7 +365,7 @@ MIT — use these skills freely in your projects, teams, and tools.
 Unearth builds on the shoulders of:
 
 - **Simon Brown** and the [C4 Model](https://c4model.com/) for software architecture visualization
-- **Addy Osmani** and [Agent Skills](https://github.com/addyosmani/agent-skills) for pioneering the AI agent skills pattern
+- **Addy Osmani** and [Agent Skills](https://github.com/addyosmani/agent-skills) for agent skills pattern
 - **Adam Tornhill** and [CodeScene](https://codescene.com/) for behavioral code analysis concepts
 - **Eric Evans** and Domain-Driven Design for capability and bounded context thinking
 
